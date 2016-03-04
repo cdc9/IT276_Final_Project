@@ -21,7 +21,7 @@ void camera_set_position(Vec2d pos)
 void camera_set_size(Vec2d size)
 {
     _Camera.w = size.x;
-    _camera.h = size.y;
+    _Camera.h = size.y;
 }
 
 Vec2d camera_get_size()

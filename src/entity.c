@@ -1,5 +1,6 @@
 #include "entity.h"
 #include "simple_logger.h"
+#include "camera.h"
 
 static Entity * EntityList = NULL;
 static Uint32 MaxEntities = 0;

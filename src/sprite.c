@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <stdlib.h>
 
 #include "sprite.h"
 #include "simple_logger.h"

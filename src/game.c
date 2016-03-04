@@ -2,6 +2,7 @@
 #include <string.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <stdio.h>
 #include "graphics.h"
 #include "simple_logger.h"
 #include "sprite.h"

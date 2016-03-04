@@ -1,6 +1,8 @@
 #ifndef __VECTOR_H__
 #define __VECTOR_H__
 
+#include <stdint.h>
+#include <SDL.h>
 /**
  * @brief a simple 2d vector structure
  */
