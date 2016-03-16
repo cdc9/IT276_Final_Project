@@ -1,16 +1,16 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 
 #include "sprite.h"
 #include "simple_logger.h"
 #include "graphics.h"
 
-static Sprite * spriteList = NULL;
+
+static Sprite *spriteList = NULL;
 static Uint32 MaxSprites = 0;
-
-
-void closeSpriteSystem();
 
 void initSpriteSystem(int maxSprites)
 {
@@ -49,10 +49,12 @@ void closeSpriteSystem()
     MaxSprites = 0;
 }
 
-Sprite *loadSprite(char *filename,int frameW,int frameH)
+Sprite *loadSprite(char *filename,int frameW,int frameH, int FPL)
 {
     int i;
+	SDL_Renderer* SpriteRender = gt_graphics_get_active_renderer();
     SDL_Surface *surface;
+	SDL_Texture *newTexture = NULL;
     Sprite *sprite = NULL;
     if (!spriteList)
     {
@@ -78,9 +80,25 @@ Sprite *loadSprite(char *filename,int frameW,int frameH)
         slog("failed to load file %s, re: %s",filename,SDL_GetError());
         return NULL;
     }
-    
-    
-    return sprite;
+	newTexture = SDL_CreateTextureFromSurface(SpriteRender, surface);
+	for (i = 0;i < MaxSprites;i++)
+    {
+        if (spriteList[i].refCount == 0)
+        {
+			//SDL_SetColorKey(surface, SDL_TRUE , SDL_MapRGB(surface->format, 255,255,255));
+			spriteList[i].image = newTexture;
+			spriteList[i].frameSize.x = frameW;
+			spriteList[i].frameSize.y = frameH;
+			//TODO: Fixing the image size!!!
+			spriteList[i].framesPerLine = FPL;
+			spriteList[i].refCount++;
+			sprintf(spriteList[i].filename,"%s",filename);
+
+			slog("Loaded the sprite");
+			return &spriteList[i];
+		}
+	}
+    return NULL;
 }
 
 void drawSprite(Sprite *sprite,int frame,Vec2d position)
@@ -114,8 +132,8 @@ void drawSprite(Sprite *sprite,int frame,Vec2d position)
                      NULL,
                      flipFlags);
 }
-
-void freeSprite(Sprite **sprite)
+/* 
+void freeSprite(Sprite **sprite) //Original
 {
     Sprite *target;
     if (!sprite)return;
@@ -128,5 +146,16 @@ void freeSprite(Sprite **sprite)
         memset(target,0,sizeof(Sprite));
     }
     *sprite = NULL;
+}
+*/
+void freeSprite(Sprite *sprite)
+{
+	sprite -> refCount--;
+    if (sprite->refCount <= 0)
+    {
+        SDL_DestroyTexture(sprite->image);
+        memset(sprite,0,sizeof(Sprite));
+    }
+    sprite = NULL;
 }
 /*eol@eof*/

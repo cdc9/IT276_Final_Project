@@ -29,4 +29,8 @@ int  rect_intersect(SDL_Rect a,SDL_Rect b)
     return 0;
 }
 
+int VectorLength(float vx,float vy)
+{
+  return (int)((vx * vx) + (vy *vy)) >> 1;
+}
 /*eol@eof*/

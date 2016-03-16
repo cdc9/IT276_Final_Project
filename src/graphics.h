@@ -36,7 +36,6 @@ SDL_Renderer *gt_graphics_get_active_renderer();
 
 Uint32 gt_graphics_get_system_time();
 void FrameDelay(Uint32 delay);
-void ResetBuffer();
 void NextFrame();
 
 #endif

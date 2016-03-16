@@ -41,7 +41,8 @@ void Init_Graphics(
     float bgcolor[4],
     int fullscreen)
 {
-    Uint32 flags = 0;
+     int imgFlags = IMG_INIT_PNG;
+	Uint32 flags = 0;
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
     {
         slog("Unable to initilaize SDL system: %s",SDL_GetError());
@@ -122,9 +123,14 @@ void Init_Graphics(
         gt_graphics_close();
         return;
     }
-        
+     
     atexit(gt_graphics_close);
     slog("graphics initialized\n");
+	
+            if( !( IMG_Init( imgFlags ) & imgFlags ) )
+            {
+                printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
+            }
 }
 
 void gt_graphics_render_surface_to_screen(SDL_Surface *surface,SDL_Rect srcRect,int x,int y)
@@ -196,7 +202,7 @@ void graphics_frame_delay()
     gt_graphics_fps = 1000.0/MAX(SDL_GetTicks() - gt_graphics_then,0.001);
     if (gt_graphics_print_fps)
     {
-        slog("FPS: %f",gt_graphics_fps);
+       // slog("FPS: %f",gt_graphics_fps);
     }
 }
 

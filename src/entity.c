@@ -1,14 +1,20 @@
+#include <SDL.h>
+#include <SDL_image.h>
+#include <stdlib.h>
+
 #include "entity.h"
 #include "simple_logger.h"
 #include "camera.h"
+#include "player.h"
 
 static Entity * EntityList = NULL;
 static Uint32 MaxEntities = 0;
 
 
-void closeEntitySystem();
-int entity_intersect(Entity *a, Entity *b);
+
+int entity_intersect(Entity *a, Entity *b);			//Collision code
 int entity_intersect_rect(Entity *a,SDL_Rect r);
+int max_ents;
 
 void initEntitySystem(int maxEntities)
 {
@@ -53,12 +59,14 @@ Entity *entity_new()
         memset(&EntityList[i],0,sizeof(Entity));
         /*set some default values here*/
         EntityList[i].inuse = 1;
+		slog("entities have been used");
+		max_ents++;
         return &EntityList[i];
     }
     return NULL;
 }
-
-void entity_free(Entity **entity)
+/*
+void entity_free(Entity **entity) //original
 {
     Entity *self;
     if (!entity)return;
@@ -66,6 +74,15 @@ void entity_free(Entity **entity)
     self = *entity;
     freeSprite(&self->sprite);
     *entity = NULL;
+}
+*/
+void entity_free(Entity *entity) //TODO: double pointer bs
+{
+	entity->inuse = 0;
+	max_ents--;
+
+    freeSprite(entity->sprite);
+    entity = NULL;
 }
 
 void entity_draw(Entity *ent,SDL_Renderer *render)
@@ -94,7 +111,7 @@ void entity_draw(Entity *ent,SDL_Renderer *render)
     }
     drawSprite(ent->sprite,ent->frame,position);
 }
-
+/*
 void entity_draw_all()
 {
     int i;
@@ -128,27 +145,7 @@ void entity_think_all()
     }
 }
 
-void entity_update_all()
-{
-    int i;
-    for (i = 0; i < MaxEntities;i++)
-    {
-        if (!EntityList[i].inuse)
-        {
-            continue;
-        }
-        
-        vec2d_add(EntityList[i].position,EntityList[i].velocity,EntityList[i].position);
-        
-        if (!EntityList[i].update)
-        {
-            continue;
-        }
-        
-        EntityList[i].update(&EntityList[i]);
-    }
-}
-
+*/
 Entity *entity_intesect_all(Entity *a)
 {
     int i;
@@ -209,4 +206,59 @@ int entity_intersect(Entity *a, Entity *b)
     return rect_intersect(aB,bB);
 }
 
+void GetFace(Entity *self)
+{
+  if((self->velocity.x == 0)&&(self->velocity.y == 0))
+  {
+    self->face = F_NULL;
+    return;
+  }
+  if(self->velocity.x < -2)
+  {
+    if(self->velocity.y < -2)self->face = F_NW;
+    else if(self->velocity.y > 2)self->face = F_SW;
+    else self->face = F_West;
+  }
+  else if(self->velocity.x > 2)
+  {
+    if(self->velocity.y < -2)self->face = F_NE;
+    else if(self->velocity.y > 2)self->face = F_SE;
+    else self->face = F_East;
+  }
+  else
+  {
+    if(self->velocity.y < 0)self->face = F_North;
+    else if(self->velocity.y > 0)self->face = F_South;
+  }
+}
+
+void update()
+{
+	int i = 0;
+	while (i < MaxEntities)
+	{
+		//do think function
+		if(EntityList[i].inuse == 1 && EntityList[i].think != NULL)
+		{
+			(*EntityList[i].think)(&EntityList[i]);
+		}
+
+		//scrolls through entities in use
+		if(EntityList[i].inuse == 1)
+		{
+			Entity *tempEnt;
+			int X;
+			int Y;
+
+			tempEnt = &EntityList[i];
+			X = tempEnt -> position.x;
+			Y = tempEnt -> position.y;
+			if(strcmp(tempEnt ->name, "Player")==0)
+			{
+				PlayerThink(tempEnt);
+			}
+		}
+		i++; // ANSWER!!!
+	}
+}
 /*eol@eof*/

@@ -6,31 +6,40 @@
 #include "graphics.h"
 #include "simple_logger.h"
 #include "sprite.h"
+#include "player.h"
+#include "entity.h"
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/
 extern SDL_Rect Camera;
 
 void Init_All();
+void Init_Player();
 
 int getImagePathFromFile(char *filepath,char * filename);
 int getCoordinatesFromFile(int *x, int *y,char * filename);
 void addCoordinateToFile(char *filepath,int x, int y);
 
 
-/*this program must be run from the directory directly below images and src, not from within src*/
-/*notice the default arguments for main.  SDL expects main to look like that, so don't change it*/
+/**
+ * @brief Main game loop. Initialize everything and have a loop for update functions.
+ */
 int main(int argc, char *argv[])
 {
   SDL_Surface *temp = NULL;
+  //New variables
   int done;
+  int mx,my;
+
+  int doOnce = 0;
   int tx = 0,ty = 0;
   const Uint8 *keys;
   char imagepath[512];
   Sprite *sprite;
+  Sprite *bg;
   SDL_Rect srcRect={0,0,800,600};
   Init_All();
-  temp = IMG_Load("images/bgtest.png");/*notice that the path is part of the filename*/
+  temp = IMG_Load("images/bgtest2.png");/*notice that the path is part of the filename*/
   if(temp != NULL)
   {
       printf("temp image loaded successfully\n");
@@ -41,14 +50,24 @@ int main(int argc, char *argv[])
   SDL_FreeSurface(temp);
   slog("got here");
   done = 0;
-  sprite = loadSprite("images/32_32_16_2sprite.png",32,32);
+  bg = loadSprite("images/bgtest2.png",1024,768,1);
+ // drawSprite(sprite,0,vec2d(0,0));
+  Init_Player();
   do
   {
-    ResetBuffer();
-    drawSprite(sprite,5,vec2d(20,20));
+	SDL_RenderClear(gt_graphics_get_active_renderer());
+	drawSprite(bg,0,vec2d(0,0));
+	update(); 
     NextFrame();
     SDL_PumpEvents();
     keys = SDL_GetKeyboardState(NULL);
+/*
+	if(doOnce == 0)
+	{
+		SpawnPlayer(20,20);
+		doOnce = 1;
+	}
+	*/
     if(keys[SDL_SCANCODE_ESCAPE])
     {
         done = 1;
@@ -70,8 +89,17 @@ void Init_All()
     400,
     bgcolor,
     0);
+	initEntitySystem(255);
+	initSpriteSystem(255); //TODO
+	Init_Player();
+	//DefaultConfig();
+
 }
 
+void Init_Player()
+{
+	SpawnPlayer(100,100);
+}
 int getImagePathFromFile(char *filepath,char * filename)
 {
     FILE *fileptr = NULL;
