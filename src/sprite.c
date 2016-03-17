@@ -89,7 +89,8 @@ Sprite *loadSprite(char *filename,int frameW,int frameH, int FPL)
 			spriteList[i].image = newTexture;
 			spriteList[i].frameSize.x = frameW;
 			spriteList[i].frameSize.y = frameH;
-			//TODO: Fixing the image size!!!
+			spriteList[i].imageSize.x = surface->w;
+			spriteList[i].imageSize.y = surface->h;
 			spriteList[i].framesPerLine = FPL;
 			spriteList[i].refCount++;
 			sprintf(spriteList[i].filename,"%s",filename);

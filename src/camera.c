@@ -1,6 +1,6 @@
 #include "camera.h"
 
-static SDL_Rect _Camera = {0,0,0,0};
+extern SDL_Rect _Camera = {0,0,0,0};
 
 SDL_Rect camera_get_active_camera()
 {

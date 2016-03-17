@@ -257,6 +257,10 @@ void update()
 			{
 				PlayerThink(tempEnt);
 			}
+			if(strcmp(tempEnt ->name, "Dummy")==0)
+			{
+				DummyThink(tempEnt);
+			}
 		}
 		i++; // ANSWER!!!
 	}

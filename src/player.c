@@ -4,11 +4,16 @@
 #include <SDL.h>
 
 #include "player.h"
+#include "graphics.h"
 #include "entity.h"
 #include "simple_logger.h"
+#include "camera.h"
 
 extern SDL_Surface *screen;
 extern Entity *ThePlayer;
+extern SDL_Rect _Camera;
+extern int LEVEL_WIDTH;
+extern int LEVEL_HEIGHT;
 
 enum PlayerInputs {PI_MovLeft,PI_MovRight,PI_MovDown,PI_MovUp,PI_Fire,PI_Jump,PI_MovUpLeft,PI_MovDownLeft,PI_MovUpRight,PI_MovDownRight,
                    PI_Pause,PI_Powerup1,PI_Powerup2,PI_Powerup3,PI_Powerup4,PI_NULL};
@@ -40,9 +45,12 @@ Entity *SpawnPlayer(int x, int y)
 		exit(0);
 	}
 	strcpy(newent->name,"Player");
-	newent->sprite = loadSprite("images/marioSprite2.png",128,160,1);
+	//newent->sprite = loadSprite("images/marioSprite2.png",128,160,1);
+	newent->sprite = loadSprite("images/ryuSprite1.png",16,33,1);
 	//newent->sprite-> imageSize.x = 32;
 	//newent->sprite-> imageSize.y = 32;
+	newent -> frameW = 16;	//TODO: make sure that this is always accurate
+	newent -> frameH - 33; //TODO: make sure that this is always accurate
 	newent -> update = UpdatePlayer;
 	newent -> think = PlayerThink;
 	newent -> maxhealth = 100;
@@ -52,18 +60,59 @@ Entity *SpawnPlayer(int x, int y)
 	newent -> position.y = y;
 	newent -> velocity.x = 0;
 	newent -> velocity.y = 0;
-	newent -> maxspeed = 12;
+	newent -> maxspeed = 3;
 	newent -> movespeed = 0;
-	newent -> accel = 4;
+	newent -> accel = 1;
 	newent -> bounds.x = x;
 	newent -> bounds.y = y;
-	newent -> bounds.w = 128;
-	newent -> bounds.h = 160;
+	newent -> bounds.w = 16;
+	newent -> bounds.h = 33;
 	newent -> state = 0;
 
-	drawSprite(newent ->sprite, 0,vec2d(x,y));
+	drawSprite(newent ->sprite, 5,vec2d(x,y));
 	//UpdatePlayer(newent);
 	ThePlayer = newent;
+	return newent;
+	//atexit(FinalOutput);
+
+}
+
+Entity *SpawnDummy(int x, int y)
+{
+	Entity *newent = NULL;
+	newent = entity_new();
+	if (newent == NULL)
+	{
+		fprintf(stderr, "Unable to generate player entity; %s", SDL_GetError());
+		exit(0);
+	}
+	strcpy(newent->name,"Dummy");
+	newent->sprite = loadSprite("images/marioSprite3.png",200,200,1);
+	//newent->sprite-> imageSize.x = 32;
+	//newent->sprite-> imageSize.y = 32;
+	newent -> frameW = 200;	//TODO: make sure that this is always accurate
+	newent -> frameH - 200; //TODO: make sure that this is always accurate
+	newent -> update = UpdateDummy;
+	newent -> think = DummyThink;
+	newent -> maxhealth = 100;
+	newent -> health = 100;
+	newent -> frame = 0;
+	newent -> position.x = x;
+	newent -> position.y = y;
+	newent -> velocity.x = 0;
+	newent -> velocity.y = 0;
+	newent -> maxspeed = 3;
+	newent -> movespeed = 0;
+	newent -> accel = 1;
+	newent -> bounds.x = x;
+	newent -> bounds.y = y;
+	newent -> bounds.w = 200;
+	newent -> bounds.h = 200;
+	newent -> state = 0;
+	//entity_draw(newent, gt_graphics_get_active_renderer());
+	drawSprite(newent ->sprite, 0,vec2d(x,y));
+	UpdateDummy(newent);
+	//ThePlayer = newent;
 	return newent;
 	//atexit(FinalOutput);
 
@@ -90,7 +139,7 @@ void PlayerThink(Entity *self)
 				self->velocity.x = self->maxspeed * -1;
 				self->movespeed = self->maxspeed;
 			}
-			self->position.x -= self->velocity.x;
+			self->position.x += self->velocity.x;
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,2,0,self->movespeed,self->movespeed * 4);
 		}
 		
@@ -108,9 +157,14 @@ void PlayerThink(Entity *self)
 			self->position.x += self->velocity.x;
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,-2,0,self->movespeed,self->movespeed * 4);
 		}
+		else if(PlayerCommands == PI_NULL)
+		{
+			self->movespeed = 0;
+			}
 		
 	UpdatePlayer(self);
 	UpdateInput();
+
 		/*
 		else if(PlayerCommands == PI_MovUpLeft)
 		{
@@ -173,6 +227,31 @@ void UpdatePlayer(Entity *self)
 {
 //	freeSprite(self->sprite); //TODO: Fix this!
 	drawSprite(self->sprite, 0,vec2d(self->position.x,self->position.y));
+	//Camera stuff
+	/*
+	_Camera.x = (self->position.x + self->frameW /2) - 400; //<- This 400 is half the screen width
+	_Camera.y = (self->position.y + self->frameH /2) - 300; //<- This 300 is half the screen height
+	*/
+	_Camera.x = (self->position.x + self->frameW /2) - 400; //<- This 400 is half the screen width
+	_Camera.y = (self->position.y + self->frameH /2) - 300; //<- This 300 is half the screen height
+
+	//Keep the camera in bounds
+                if( _Camera.x < 0 )
+                { 
+                    _Camera.x = 0;
+                }
+                if( _Camera.y < 0 )
+                {
+                    _Camera.y = 0;
+                }
+                if( _Camera.x > LEVEL_WIDTH - _Camera.w )
+                {
+                    _Camera.x = LEVEL_WIDTH - _Camera.w;
+                }
+                if( _Camera.y > LEVEL_HEIGHT - _Camera.h )
+                {
+                    _Camera.y = LEVEL_HEIGHT - _Camera.h;
+                }
 	/*
 	int Goframe =0;
 	
@@ -261,19 +340,44 @@ void UpdatePlayer(Entity *self)
 
 void UpdateInput()
 {
-
+	SDL_Event event;
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
+	while(SDL_PollEvent( &event))
+	{
+		switch(event.type)
+		{
+		case SDL_KEYDOWN:
+		if (keys[SDL_GetScancodeFromKey(SDLK_LEFT)])
+		{
+			PlayerCommands = PI_MovLeft;
+		}
+		if (keys[SDL_GetScancodeFromKey(SDLK_RIGHT)])
+		{
+			PlayerCommands = PI_MovRight;
+		}
+        break;
+
+		case SDL_KEYUP:
+        PlayerCommands = PI_NULL;
+        break;
+
+		default:
+        break;
+		}
+	}
+	/*
+	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
 	if (keys[SDL_GetScancodeFromKey(SDLK_LEFT)])
 	{
-		slog("You hit the button!");
 		PlayerCommands = PI_MovLeft;
 	}
 	if (keys[SDL_GetScancodeFromKey(SDLK_RIGHT)])
 	{
-		slog("You hit the button!");
 		PlayerCommands = PI_MovRight;
 	}
-	
+	*/
 }
 	 
 
@@ -294,4 +398,16 @@ void DefaultConfig()
 	KeyButtons[PI_Powerup4] = SDLK_4;
 }
 */
-
+void DummyThink(Entity *self)
+{
+	UpdateDummy(self);
+}
+void UpdateDummy(Entity *self)
+{
+	SDL_Rect camera;
+	Vec2d position;
+	camera = camera_get_active_camera();
+	position.x = self->position.x - camera.x;
+    position.y = self->position.y - camera.y;
+	drawSprite(self->sprite, 0,position);
+}

@@ -8,19 +8,24 @@
 #include "sprite.h"
 #include "player.h"
 #include "entity.h"
+#include "camera.h"
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/
-extern SDL_Rect Camera;
+extern SDL_Rect _Camera;
+extern int LEVEL_WIDTH = 1024;
+extern int LEVEL_HEIGHT = 768;
 
 void Init_All();
 void Init_Player();
+void Init_Dummy();
 
 int getImagePathFromFile(char *filepath,char * filename);
 int getCoordinatesFromFile(int *x, int *y,char * filename);
 void addCoordinateToFile(char *filepath,int x, int y);
 
 
+Vec2d camSize;
 /**
  * @brief Main game loop. Initialize everything and have a loop for update functions.
  */
@@ -46,17 +51,17 @@ int main(int argc, char *argv[])
       SDL_BlitSurface(temp,NULL,buffer,NULL);
   }
   slog("got here");
-  gt_graphics_render_surface_to_screen(temp,srcRect,0,0);
+  gt_graphics_render_surface_to_screen(temp,srcRect,0,0); //Perhaps putting camera here will work?
   SDL_FreeSurface(temp);
   slog("got here");
   done = 0;
   bg = loadSprite("images/bgtest2.png",1024,768,1);
- // drawSprite(sprite,0,vec2d(0,0));
-  Init_Player();
+
   do
   {
 	SDL_RenderClear(gt_graphics_get_active_renderer());
-	drawSprite(bg,0,vec2d(0,0));
+	//drawSprite(bg,0,vec2d(0,0)); 
+	drawSprite(bg,0,vec2d(0-_Camera.x,0-_Camera.y));
 	update(); 
     NextFrame();
     SDL_PumpEvents();
@@ -84,21 +89,29 @@ void Init_All()
   Init_Graphics(
 	"Game Test",
     800,
-    400,
+    600,
     800,
-    400,
+    600,
     bgcolor,
     0);
 	initEntitySystem(255);
 	initSpriteSystem(255); //TODO
 	Init_Player();
+	Init_Dummy();
+	camSize.x = 168;
+	camSize.y = 120;
+	camera_set_size(camSize);
 	//DefaultConfig();
 
 }
 
 void Init_Player()
 {
-	SpawnPlayer(100,100);
+	SpawnPlayer(350,200);
+}
+void Init_Dummy()
+{
+	SpawnDummy(500,200);
 }
 int getImagePathFromFile(char *filepath,char * filename)
 {

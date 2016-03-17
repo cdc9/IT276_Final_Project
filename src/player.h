@@ -16,20 +16,39 @@ typedef struct Player_t
 	int mx, my;					/**<the coordinates that the player is in.*/
 } Player;
 
+/**
+ * @brief Spawns the Dummy, assigns all of it's values and draws the sprite to screen
+ * @param x The x position
+ * @param y The y position
+ */
+Entity *SpawnDummy(int x, int y);
+/**
+ * @brief Spawns the player, assigns all of it's values and draws the sprite to screen
+ * @param x The x position
+ * @param y The y position
+ */
 Entity *SpawnPlayer(int x, int y);
 
 /**
- * @brief free's sprite, then updates player position.
+ * @brief free's sprite, then updates player position. Also works with the camera
  * @param self the player entity
  */
 void UpdatePlayer(Entity *self);
-
+/**
+ * @brief Dummy update function
+ * @param self the dummy entity
+ */
+void UpdateDummy(Entity *self);
 /**
  * @brief Player think function. Mainly handles movement and speed right now
  * @param self the player entity
  */
 void PlayerThink(Entity *self);
-
+/**
+ * @brief Dummy think function. 
+ * @param self the Dummy entity
+ */
+void DummyThink(Entity *self);
 
 /**
  * @brief Handles the player inputs. PlayerCommands will be used by other functions to do things.

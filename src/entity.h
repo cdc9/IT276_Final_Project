@@ -15,18 +15,20 @@ enum FACE       {F_South, F_SW, F_West, F_NW,F_North, F_NE, F_East, F_SE,F_NULL}
 typedef struct Entity_S
 {
     int      inuse;             /**<flag for tracking resource use*/
-    char     name[128];			/**> Used for the names of the entities */
-	char	 type[128];			/**> Used to describe the type of entity*/
-    Vec2d    position;			/**> Used for the position of the entity */
-    Vec2d    velocity;			/**> Used for the velocity of the entity*/
+    char     name[128];			/**< Used for the names of the entities */
+	char	 type[128];			/**< Used to describe the type of entity*/
+    Vec2d    position;			/**< Used for the position of the entity */
+    Vec2d    velocity;			/**< Used for the velocity of the entity*/
     SDL_Rect bounds;			/**<Used for collision detection*/
-    Sprite  *sprite;			/**> The sprite of the entity */
+    Sprite  *sprite;			/**< The sprite of the entity */
 	int		 state;				/**<Used for switching states*/
 	int		 face;				/**<The direction we are moving in*/
     int      cameraEnt;         /**<true if the entity is drawn relative to the camera*/
 	int		 fcount;			/**<used for animation, the loop variable*/
 	int		 frate;				/**<How often we update our frames*/
-    int      frame;				/**> The frame of the entity */
+    int      frame;				/**< The frame of the entity */
+	int		 frameW;			/**< The frame width of the entity*/
+	int		 frameH;			/**< The frame height of the entity*/
     float    health,maxhealth;	/**> The health and maxhealth of the entity */
 	float	 maxspeed, movespeed;	/**> The maximum speed of the entity, and the entities current speed */
 	int		 accel;				/**> The accelaration of the entity */
