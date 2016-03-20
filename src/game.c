@@ -9,12 +9,13 @@
 #include "player.h"
 #include "entity.h"
 #include "camera.h"
+#include "projectile.h"
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/
 extern SDL_Rect _Camera;
-extern int LEVEL_WIDTH = 1024;
-extern int LEVEL_HEIGHT = 768;
+int LEVEL_WIDTH = 1024;
+int LEVEL_HEIGHT = 768;
 
 void Init_All();
 void Init_Player();
@@ -26,12 +27,14 @@ void addCoordinateToFile(char *filepath,int x, int y);
 
 
 Vec2d camSize;
+int deltaTime;
 /**
  * @brief Main game loop. Initialize everything and have a loop for update functions.
  */
 int main(int argc, char *argv[])
 {
   SDL_Surface *temp = NULL;
+  int lastTime = 0;
   //New variables
   int done;
   int mx,my;
@@ -44,6 +47,7 @@ int main(int argc, char *argv[])
   Sprite *bg;
   SDL_Rect srcRect={0,0,800,600};
   Init_All();
+  lastTime= SDL_GetTicks();
   temp = IMG_Load("images/bgtest2.png");/*notice that the path is part of the filename*/
   if(temp != NULL)
   {
@@ -59,10 +63,13 @@ int main(int argc, char *argv[])
 
   do
   {
+	deltaTime = SDL_GetTicks() - lastTime;
+	lastTime = SDL_GetTicks();
 	SDL_RenderClear(gt_graphics_get_active_renderer());
 	//drawSprite(bg,0,vec2d(0,0)); 
 	drawSprite(bg,0,vec2d(0-_Camera.x,0-_Camera.y));
 	update(); 
+	entity_draw_all();
     NextFrame();
     SDL_PumpEvents();
     keys = SDL_GetKeyboardState(NULL);
@@ -77,6 +84,7 @@ int main(int argc, char *argv[])
     {
         done = 1;
     }
+	
   }while(!done);
   slog("got here");
   exit(0);		/*technically this will end the program, but the compiler likes all functions that can return a value TO return a value*/
@@ -96,10 +104,10 @@ void Init_All()
     0);
 	initEntitySystem(255);
 	initSpriteSystem(255); //TODO
-	Init_Player();
 	Init_Dummy();
-	camSize.x = 168;
-	camSize.y = 120;
+	Init_Player();
+	camSize.x = 800;
+	camSize.y = 600;
 	camera_set_size(camSize);
 	//DefaultConfig();
 
@@ -111,7 +119,7 @@ void Init_Player()
 }
 void Init_Dummy()
 {
-	SpawnDummy(500,200);
+	SpawnDummy(200,200);
 }
 int getImagePathFromFile(char *filepath,char * filename)
 {

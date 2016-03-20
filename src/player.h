@@ -55,6 +55,13 @@ void DummyThink(Entity *self);
  */
 void UpdateInput();
 
+/**
+ * @brief Function to give player a powerup 
+ * @param self the Player entity
+ * @param power the power you wish to give player
+ */
+void GivePlayerPowerUp(Entity *self,int power);
+
 //void DefaultConfig();
 
 

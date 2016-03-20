@@ -6,6 +6,7 @@
 #include "simple_logger.h"
 #include "camera.h"
 #include "player.h"
+#include "projectile.h"
 
 static Entity * EntityList = NULL;
 static Uint32 MaxEntities = 0;
@@ -111,21 +112,39 @@ void entity_draw(Entity *ent,SDL_Renderer *render)
     }
     drawSprite(ent->sprite,ent->frame,position);
 }
-/*
+
 void entity_draw_all()
 {
-    int i;
+	Vec2d position;
+    SDL_Rect camera;
+	Entity *temp = NULL;
+	int i;
+	camera = camera_get_active_camera();
     for (i = 0; i < MaxEntities;i++)
     {
         if (!EntityList[i].inuse)
         {
             continue;
         }
-        
-        
+        if(EntityList[i].inuse == 1)
+		{
+			temp = &EntityList[i];
+			
+		/*if (!entity_intersect_rect(temp,camera))
+		{
+			return;
+		}*/
+		if (temp->cameraEnt)
+		{
+			position.x = temp->position.x - camera.x;
+			position.y = temp->position.y - camera.y;
+		}
+		drawSprite(temp->sprite,temp->frame, position);
+		}
+     
     }
 }
-
+/*
 void entity_think_all()
 {
     int i;
@@ -260,6 +279,10 @@ void update()
 			if(strcmp(tempEnt ->name, "Dummy")==0)
 			{
 				DummyThink(tempEnt);
+			}
+			if(strcmp(tempEnt ->name, "Projectile")==0)
+			{
+				UpdateBullet(tempEnt);
 			}
 		}
 		i++; // ANSWER!!!

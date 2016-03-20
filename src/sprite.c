@@ -111,8 +111,7 @@ void drawSprite(Sprite *sprite,int frame,Vec2d position)
     if (!sprite)
     {
         return;
-    }
-        
+    }  
     gt_rect_set(
         cell,
         frame%sprite->framesPerLine * sprite->frameSize.x,
