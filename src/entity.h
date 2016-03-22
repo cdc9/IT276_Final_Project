@@ -18,12 +18,14 @@ typedef struct Entity_S
     char     name[128];			/**< Used for the names of the entities */
 	char	 type[128];			/**< Used to describe the type of entity*/
     Vec2d    position;			/**< Used for the position of the entity */
+	Vec2d    lastPosition;		/**< Used for the previous position of the entity */
 	Vec2d    offset;			/**< Used for the offset of the entity */
     Vec2d    velocity;			/**< Used for the velocity of the entity*/
     SDL_Rect bounds;			/**<Used for collision detection*/
     Sprite  *sprite;			/**< The sprite of the entity */
 	int		 state;				/**<Used for switching states*/
 	int		 face;				/**<The direction we are moving in*/
+	int		 facing;			/**<The direction we are facing. Lamer version for prototype*/
     int      cameraEnt;         /**<true if the entity is drawn relative to the camera*/
 	int		 fcount;			/**<used for animation, the loop variable*/
 	int		 frate;				/**<How often we update our frames*/

@@ -10,16 +10,23 @@
 #include "entity.h"
 #include "camera.h"
 #include "projectile.h"
+#include "enemy.h"
+#include "platforms.h"
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/
 extern SDL_Rect _Camera;
-int LEVEL_WIDTH = 1024;
+extern SDL_Joystick* gGameController;
+int LEVEL_WIDTH = 3024;
 int LEVEL_HEIGHT = 768;
 
 void Init_All();
 void Init_Player();
 void Init_Dummy();
+void Init_Enemy1();
+void Init_Enemy2();
+void Init_Enemy3();
+void Init_Platform();
 
 int getImagePathFromFile(char *filepath,char * filename);
 int getCoordinatesFromFile(int *x, int *y,char * filename);
@@ -68,6 +75,7 @@ int main(int argc, char *argv[])
 	SDL_RenderClear(gt_graphics_get_active_renderer());
 	//drawSprite(bg,0,vec2d(0,0)); 
 	drawSprite(bg,0,vec2d(0-_Camera.x,0-_Camera.y));
+	drawSprite(bg,0,vec2d(1024-_Camera.x,0-_Camera.y));
 	update(); 
 	entity_draw_all();
     NextFrame();
@@ -104,22 +112,65 @@ void Init_All()
     0);
 	initEntitySystem(255);
 	initSpriteSystem(255); //TODO
-	Init_Dummy();
+	//Init_Dummy();
 	Init_Player();
+	Init_Enemy1();
+	Init_Enemy2();
+	//Init_Enemy3();
+	Init_Platform();
 	camSize.x = 800;
 	camSize.y = 600;
 	camera_set_size(camSize);
 	//DefaultConfig();
+	if( SDL_NumJoysticks() < 1 )
+        {
+            slog( "Warning: No joysticks connected!\n" );
+        }
+        else
+        {
+            //Load joystick
+            gGameController = SDL_JoystickOpen( 0 );
+            if( gGameController == NULL )
+            {
+                printf( "Warning: Unable to open game controller! SDL Error: %s\n", SDL_GetError() );
+            }
+			slog("Joystick has %d buttons \n",SDL_JoystickNumButtons(gGameController));
+        }
 
 }
 
 void Init_Player()
 {
-	SpawnPlayer(350,200);
+	SpawnPlayer(1000,300);
 }
 void Init_Dummy()
 {
 	SpawnDummy(200,200);
+}
+void Init_Enemy1()
+{
+	SpawnEnemy(500,300,1);
+}
+void Init_Enemy2()
+{
+	SpawnEnemy(400,300,2);
+}
+void Init_Enemy3()
+{
+	SpawnEnemy(500,400,3);
+}
+void Init_Platform()
+{
+	SpawnPlatform(50,500);
+	SpawnPlatform(500,425);
+	SpawnPlatform(1000,500);
+	SpawnPlatform2(1600,500);
+	SpawnPlatform2(1750,400);
+	SpawnPlatform2(1850,500);
+	SpawnPlatform2(2000,400);
+	SpawnPlatform2(2150,500);
+	SpawnPlatform2(2100,400);
+	SpawnPlatform(2250,393);
 }
 int getImagePathFromFile(char *filepath,char * filename)
 {

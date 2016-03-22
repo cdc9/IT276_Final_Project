@@ -12,7 +12,7 @@
 
 extern int deltaTime;
 
-Entity *SpawnProjectile(int sx,int sy,float angle,float speed,float accel,int damage)
+Entity *SpawnProjectile(int sx,int sy,float angle,float speed,float accel,int damage,int type)
 {
 	//float cosine, sine;
 	Entity *newent = NULL;
@@ -22,16 +22,28 @@ Entity *SpawnProjectile(int sx,int sy,float angle,float speed,float accel,int da
 		fprintf(stderr, "Unable to generate player entity; %s", SDL_GetError());
 		exit(0);
 	}
-	strcpy(newent->name,"Projectile");
-	//newent->sprite = loadSprite("images/bullet.png",9,9,1);
-	newent -> frameW = 9;	//TODO: make sure that this is always accurate
-	newent -> frameH - 9;
-	newent -> bounds.x = 9;
-	newent -> bounds.y = 9;
+	if(type == 1)
+	{
+		strcpy(newent->name,"Projectile");
+	}
+	else if(type == 2)
+	{
+		strcpy(newent->name,"EnemyProjectile1");
+	}
+	else if(type == 3)
+	{
+		strcpy(newent->name,"EnemyProjectile2");
+	}
+	else if(type == 4)
+	{
+		strcpy(newent->name,"EnemyProjectile3");
+	}
 	newent -> damage = damage;
 	newent -> cameraEnt = 1;
 	newent -> position.x  = sx;
 	newent -> position.y = sy;
+	newent -> lastPosition.x = newent-> position.x;
+	newent -> lastPosition.y = newent-> position.y;
 	newent -> velocity.x = speed;
 	newent -> velocity.y = speed;
 	if(accel != 0)
@@ -44,10 +56,10 @@ Entity *SpawnProjectile(int sx,int sy,float angle,float speed,float accel,int da
 	newent -> maxspeed = (int)speed;
 	return newent;
 }
-Entity *SpawnBullet(Entity *owner,int sx,int sy,float angle,float speed,float accel, int damage,int powerup)
+Entity *SpawnBullet(Entity *owner,int sx,int sy,float angle,float speed,float accel, int damage,int powerup,int type)
 {
 	Entity *newent = NULL;
-	newent = SpawnProjectile(sx,sy,angle,speed,accel,damage);
+	newent = SpawnProjectile(sx,sy,angle,speed,accel,damage,type);
 	if(newent == NULL)
 	{
 		slog("This bullet has not been created!!");
@@ -56,16 +68,19 @@ Entity *SpawnBullet(Entity *owner,int sx,int sy,float angle,float speed,float ac
 	newent -> frame = 0;
 	newent -> frate = 30;
 	newent -> timer = 2000;
+	newent -> facing = owner->facing;
 	switch(powerup)
 	{
 		case 0:
 			newent->sprite = loadSprite("images/bullet.png",9,9,1);
 			newent -> offset.x = 18;
 			newent -> offset.y = 12;
-			newent -> bounds.x = 1;
-			newent -> bounds.y = 1;
+			newent -> bounds.x = 0;
+			newent -> bounds.y = 0;
 			newent -> bounds.w = 9;
 			newent -> bounds.h = 9;
+			newent -> frameW = 9;
+			newent -> frameH = 9;
 			break;
 		case 1:
 			newent->sprite = loadSprite("images/bigbullet.png",16,16,1);
@@ -75,6 +90,8 @@ Entity *SpawnBullet(Entity *owner,int sx,int sy,float angle,float speed,float ac
 			newent -> bounds.y = 1;
 			newent -> bounds.w = 16;
 			newent -> bounds.h = 16;
+			newent -> frameW = 16;
+			newent -> frameH = 16;
 			break;
 		case 2:
 			newent->sprite = loadSprite("images/firebullet.png",17,10,1);
@@ -84,6 +101,8 @@ Entity *SpawnBullet(Entity *owner,int sx,int sy,float angle,float speed,float ac
 			newent -> bounds.y = 1;
 			newent -> bounds.w = 17;
 			newent -> bounds.h = 10;
+			newent -> frameW = 17;
+			newent -> frameH = 10;
 			break;
 		case 3:
 			newent->sprite = loadSprite("images/bluefirebullet.png",30,16,1);
@@ -93,6 +112,8 @@ Entity *SpawnBullet(Entity *owner,int sx,int sy,float angle,float speed,float ac
 			newent -> bounds.y = 1;
 			newent -> bounds.w = 30;
 			newent -> bounds.h = 16;
+			newent -> frameW = 30;
+			newent -> frameH = 16;
 			break;
 		default:
 			newent->sprite = loadSprite("images/bullet.png",9,9,1);
@@ -102,6 +123,8 @@ Entity *SpawnBullet(Entity *owner,int sx,int sy,float angle,float speed,float ac
 			newent -> bounds.y = 1;
 			newent -> bounds.w = 9;
 			newent -> bounds.h = 9;
+			newent -> frameW = 9;
+			newent -> frameH = 9;
 			break;
 	}
 //	newent -> update = UpdateBullet;
@@ -120,10 +143,12 @@ void UpdateBullet(Entity *self)
 	if(self-> timer <= 0)
 	{
 		entity_free(self);
-		slog("bullet has been freed");
+		//slog("bullet has been freed");
 	}
-	self->velocity.x += self->accel;
-	self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+	if(self->facing == 0)
+	{
+		self->velocity.x += self->accel;
+		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
 		//self->grounded = 0;
 		if(self->movespeed > self->maxspeed)
 		{
@@ -132,12 +157,131 @@ void UpdateBullet(Entity *self)
 			self->movespeed = self->maxspeed;
 		}
 		self->position.x += self->velocity.x;
-		//slog("This is is working");
-	//self->position.y += self->velocity.y; <- y movement which will come later
+	}
+	if(self->facing == 1)
+	{
+		self->velocity.x += self->accel;
+		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+		//self->grounded = 0;
+		if(self->movespeed > self->maxspeed)
+		{
+			self->velocity.y = 0;
+			self->velocity.x = self->maxspeed;
+			self->movespeed = self->maxspeed;
+		}
+		self->position.x -= self->velocity.x;
+	}
+	self -> lastPosition = self-> position;
 }
 void BulletThink(Entity *self)
 {
 	UpdateBullet(self);
+}
+
+Entity *SpawnEnemyBullet(Entity *owner,int sx,int sy,float angle,float speed,float accel, int damage,int type, int enType)
+{
+	Entity *newent = NULL;
+	newent = SpawnProjectile(sx,sy,angle,speed,accel,damage,enType);
+	switch(type)
+	{
+		case 1:
+			newent->sprite = loadSprite("images/enemybullet.png",8,3,1);
+			newent -> offset.x = 0;
+			newent -> offset.y = 12;
+			newent -> bounds.x = 0;
+			newent -> bounds.y = 0;
+			newent -> bounds.w = 8;
+			newent -> bounds.h = 3;
+			newent -> frameW = 8;
+			newent -> frameH = 3;
+			newent -> frame = 0;
+			newent -> frate = 30;
+			newent -> timer = 3000;
+			break;
+		case 2:
+			newent->sprite = loadSprite("images/firebullet.png",17,10,1);
+			newent -> offset.x = 0;
+			newent -> offset.y = 12;
+			newent -> bounds.x = 0;
+			newent -> bounds.y = 0;
+			newent -> bounds.w = 17;
+			newent -> bounds.h = 10;
+			newent -> frameW = 8;
+			newent -> frameH = 3;
+			newent -> frame = 0;
+			newent -> frate = 30;
+			newent -> timer = 250;
+			break;
+		case 3:
+			newent->sprite = loadSprite("images/firebullet.png",17,10,1);
+			newent -> offset.x = 0;
+			newent -> offset.y = 12;
+			newent -> bounds.x = 0;
+			newent -> bounds.y = 0;
+			newent -> bounds.w = 17;
+			newent -> bounds.h = 10;
+			newent -> frameW = 17;
+			newent -> frameH = 10;
+			newent -> frame = 0;
+			newent -> frate = 30;
+			newent -> timer = 3000;
+			break;
+	}
+}
+void UpdateEnemyBullet(Entity *self,int type)
+{
+	if(self -> timer > 0)
+	{
+		self-> timer -= deltaTime;
+	}
+	if(self-> timer <= 0)
+	{
+		entity_free(self);
+		slog("bullet has been freed");
+	}
+	switch(type)
+	{
+		case 1:
+			self->velocity.x += self->accel;
+			self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+				//self->grounded = 0;
+				if(self->movespeed > self->maxspeed)
+				{
+					self->velocity.y = 0;
+					self->velocity.x = self->maxspeed;
+					self->movespeed = self->maxspeed;
+				}
+				self->position.x -= self->velocity.x;
+			break;
+		case 2:
+			self->velocity.x += self->accel;
+			self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+			//self->grounded = 0;
+			if(self->movespeed > self->maxspeed)
+			{
+				self->velocity.y = 0;
+				self->velocity.x = self->maxspeed;
+				self->movespeed = self->maxspeed;
+			}
+			self->position.x -= self->velocity.x;
+			break;
+		case 3:
+			self->velocity.x += self->accel;
+			self->velocity.y -= self->accel;
+			self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+				//self->grounded = 0;
+				if(self->movespeed > self->maxspeed)
+				{
+					self->velocity.x = self->velocity.y * -1;
+					self->velocity.x = self->maxspeed;
+					self->movespeed = self->maxspeed;
+				}
+				self->position.x -= self->velocity.x;
+				self->position.y -= self->velocity.y;
+		
+		break;
+	}
+	self -> lastPosition = self-> position;
 }
 /*
 	GetFace(owner);

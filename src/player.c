@@ -23,6 +23,13 @@ enum PlayerInputs {PI_NULL,PI_MovLeft,PI_MovRight,PI_MovDown,PI_MovUp,PI_Fire,PI
 
 Uint32 KeyButtons[PI_Max];
 
+//Joystick Code
+SDL_GameController* gGameController = NULL;
+const int JOYSTICK_DEAD_ZONE = 8000;
+int xDir = 0;
+int yDir = 0;
+
+
 int PlayerCommands = PI_NULL;
 Entity *ThePlayer = NULL;
 //SDL_Surface *titlebar = NULL;
@@ -52,7 +59,7 @@ Entity *SpawnPlayer(int x, int y)
 	//newent->sprite-> imageSize.x = 32;
 	//newent->sprite-> imageSize.y = 32;
 	newent -> frameW = 17;	//TODO: make sure that this is always accurate
-	newent -> frameH - 33; //TODO: make sure that this is always accurate
+	newent -> frameH = 33; //TODO: make sure that this is always accurate
 	newent -> update = UpdatePlayer;
 	newent -> think = PlayerThink;
 	newent -> maxhealth = 100;
@@ -65,17 +72,15 @@ Entity *SpawnPlayer(int x, int y)
 	newent -> bounds.h = 33;
 	newent -> position.x = x;
 	newent -> position.y = y;
+	newent -> lastPosition.x = x;
+	newent -> lastPosition.y = y;
 	newent -> velocity.x = 0;
 	newent -> velocity.y = 0;
-	newent -> maxspeed = 3;
+	newent -> maxspeed = 2;
 	newent -> movespeed = 0;
 	newent -> accel = 1;
-	newent -> bounds.x = x;
-	newent -> bounds.y = y;
-	newent -> bounds.w = 16;
-	newent -> bounds.h = 33;
 	newent -> state = 0;
-	newent -> jumpAccel = 1;
+	newent -> jumpAccel = 5;
 	newent -> maxJumpSpeed = 5;
 	newent -> timer = 0;
 	newent -> powerup = 0;
@@ -101,7 +106,7 @@ Entity *SpawnDummy(int x, int y)
 	//newent->sprite-> imageSize.x = 32;
 	//newent->sprite-> imageSize.y = 32;
 	newent -> frameW = 200;	//TODO: make sure that this is always accurate
-	newent -> frameH - 200; //TODO: make sure that this is always accurate
+	newent -> frameH = 200; //TODO: make sure that this is always accurate
 	newent -> update = UpdateDummy;
 	newent -> think = DummyThink;
 	newent -> maxhealth = 100;
@@ -137,6 +142,11 @@ void PlayerThink(Entity *self)
 	char text [40];
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 	
+	if(self->health <=0)
+	{
+		entity_free(self);
+	}
+	self-> lastPosition = self->position;
 	UpdateInput();
 	GetFace(self);
 	if((self->state != ST_DEAD) && (self-> state != ST_DIE))
@@ -155,6 +165,8 @@ void PlayerThink(Entity *self)
 			}
 			self->position.x += self->velocity.x;
 			moving = 1;
+			self->sprite = loadSprite("images/ryuSprite3.png",17,33,1);
+			self->facing = 1;
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,2,0,self->movespeed,self->movespeed * 4);
 		}
 		
@@ -171,67 +183,75 @@ void PlayerThink(Entity *self)
 			}
 			self->position.x += self->velocity.x;
 			moving = 1;
+			self->sprite = loadSprite("images/ryuSprite2.png",17,33,1);
+			self->facing = 0;
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,-2,0,self->movespeed,self->movespeed * 4);
 		}
-		 if(PlayerCommands & (1<< PI_MovUp))
-		{   
-			self->velocity.y -= self->accel;
-			self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
-			//self->grounded = 0;
-			if(self->movespeed > self->maxspeed)
-			{
-				self->velocity.x = 0;
-				self->velocity.y = self->maxspeed * -1;
-				self->movespeed = self->maxspeed;
+		if(self->powerup == 4)
+		{
+			 if(PlayerCommands & (1<< PI_MovUp))
+			{   
+				self->velocity.y -= self->accel;
+				self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+				//self->grounded = 0;
+				if(self->movespeed > self->maxspeed)
+				{
+					self->velocity.x = 0;
+					self->velocity.y = self->maxspeed * -1;
+					self->movespeed = self->maxspeed;
+				}
+				self->position.y += self->velocity.y;
+				moving = 1;
 			}
-			self->position.y += self->velocity.y;
-			moving = 1;
-		}
-		 if(PlayerCommands & (1<< PI_MovDown))
-		{   
-			self->velocity.y += self->accel;
-			self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
-			//self->grounded = 0;
-			if(self->movespeed > self->maxspeed)
-			{
-				self->velocity.x = 0;
-				self->velocity.y = self->maxspeed;
-				self->movespeed = self->maxspeed;
-			}
-			self->position.y += self->velocity.y;
-			moving = 1;
+			 if(PlayerCommands & (1<< PI_MovDown))
+			{   
+				self->velocity.y += self->accel;
+				self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+				//self->grounded = 0;
+				if(self->movespeed > self->maxspeed)
+				{
+					self->velocity.x = 0;
+					self->velocity.y = self->maxspeed;
+					self->movespeed = self->maxspeed;
+				}
+				self->position.y += self->velocity.y;
+				moving = 1;
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,0,-1,self->movespeed,self->movespeed * 4);
+			}
 		}
 
-		if(PlayerCommands & (1<< PI_Jump) && self->timer <= 0)
+		if(PlayerCommands & (1<< PI_Jump) && self->timer <= 0 && self-> grounded == 0)
 		{   
 			self-> timer = 500;
 			moving = 1;
+			self->grounded = 1;
 		}
 		if( moving == 0)
 		{
 			self-> velocity.x = 0;
 			self-> velocity.y = 0;
 		}
-		if(PlayerCommands & (1<< PI_Fire) && self->bulletTimer <=0 && self->powerup == 0)
+		if(PlayerCommands & (1<< PI_Fire)  && self->bulletTimer <=0 )
 		{
-			self-> bulletTimer = 750;
-			SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,5,0);
-		}
-		if(PlayerCommands & (1<< PI_Fire) && self->bulletTimer <=0 && self->powerup == 1)
-		{
-			self-> bulletTimer = 750;
-			SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,10,1);
-		}
-		if(PlayerCommands & (1<< PI_Fire) && self->bulletTimer <=0 && self->powerup == 2)
-		{
-			self-> bulletTimer = 300;
-			SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,5,2);
-		}
-		if(PlayerCommands & (1<< PI_Fire) && self->bulletTimer <=0 && self->powerup == 3)
-		{
-			self-> bulletTimer = 300;
-			SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,10,3);
+			switch(self->powerup)
+			{
+			case 0:
+				self-> bulletTimer = 500;
+				SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,5,0,1);
+				break;
+			case 1:
+		  		self-> bulletTimer = 500;
+				SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,10,1,1);
+				break;
+			case 2:
+				self-> bulletTimer = 300;
+				SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,5,2,1);
+				break;
+			case 3:
+				self-> bulletTimer = 300;
+				SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,10,3,1);
+				break;
+			}
 		}
 		if(PlayerCommands & (1<< PI_Powerup1))
 		{ 
@@ -254,6 +274,7 @@ void PlayerThink(Entity *self)
 		{ 
 			GivePlayerPowerUp(self, 4);
 		}
+	}
 	UpdatePlayer(self);
 
 		/*
@@ -311,7 +332,7 @@ void PlayerThink(Entity *self)
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,0,-1,self->movespeed,self->movespeed * 4);
 		}
 		*/
-	}
+	//}
 	
 }
 void GivePlayerPowerUp(Entity *self,int power)
@@ -346,6 +367,7 @@ void GivePlayerPowerUp(Entity *self,int power)
 
 void UpdatePlayer(Entity *self)
 {
+
 	//drawSprite(self->sprite, 0,self->position);
 	//Camera stuff
 	//slog("player's position: %f %f",self->position.x,self->position.y);
@@ -388,15 +410,18 @@ void UpdatePlayer(Entity *self)
 			}
 			self->position.y += self->velocity.y;
 		
-		if(self->grounded == 1)
+		if(self->grounded == 1 && self->powerup != 4)
 		{
 			//self -> velocity.y -= 1;
-			//self->position.y += 1;
+			self->position.y += 2;
 		}
 		}
 		else
 		{
-			//self->position.y += 1;
+			if(self->powerup != 4)
+			{
+				self->position.y += 2;
+			}
 		}
 		if(self->bulletTimer > 0)
 		{
@@ -409,11 +434,82 @@ void UpdateInput()
 {
 	static int pressed = 0;
 	SDL_Event event;
-	PlayerCommands = PI_NULL;
 	while(SDL_PollEvent( &event))
 	{
 		switch(event.type)
 		{
+		case SDL_JOYBUTTONDOWN:
+			//slog("%d\n",event.jbutton.button);
+			if(event.jbutton.button == 1)
+			{
+				PlayerCommands |= (1<< PI_Jump);
+			}
+			if(event.jbutton.button == 0)
+			{
+				PlayerCommands |= (1<< PI_Fire);
+			}
+			break;
+		case SDL_JOYBUTTONUP:
+			if(event.jbutton.button == 1)
+			{
+				PlayerCommands &= ~(1<< PI_Jump);
+			}
+			if(event.jbutton.button == 0)
+			{
+				PlayerCommands &= ~(1<< PI_Fire);
+			}
+			break;
+		case SDL_JOYAXISMOTION:
+			if( event.jaxis.which == 0 )
+			{
+				 //X axis motion
+                if( event.jaxis.axis == 0 )
+                {
+                    //Left of dead zone
+                    if( event.jaxis.value < -JOYSTICK_DEAD_ZONE )
+                    {
+                        xDir = -1;
+						PlayerCommands |= (1<< PI_MovLeft);
+						//slog("%d \n",event.jaxis.value);
+                    }
+                    //Right of dead zone
+                    else if( event.jaxis.value > JOYSTICK_DEAD_ZONE )
+                    {
+                        xDir =  1;
+						PlayerCommands |= (1<< PI_MovRight);
+						//slog("%d \n",event.jaxis.value);
+                    }
+                    else
+                    {
+                        xDir = 0;
+						PlayerCommands &= ~(1<< PI_MovLeft);
+						PlayerCommands &= ~(1<< PI_MovRight);
+                    }
+                }
+			    else if( event.jaxis.axis == 1 )
+                {
+                    //Below of dead zone
+                    if( event.jaxis.value < -JOYSTICK_DEAD_ZONE )
+                    {
+						PlayerCommands |= (1<< PI_MovUp);
+                        yDir = -1;
+						//slog("%d \n",event.jaxis.value);
+                    }
+                    //Above of dead zone
+                    else if( event.jaxis.value > JOYSTICK_DEAD_ZONE )
+                    {
+						PlayerCommands |= (1<< PI_MovDown);
+                        yDir =  1;
+						//slog("%d \n",event.jaxis.value);
+                    }
+                    else
+                    {
+                        yDir = 0;
+						PlayerCommands &= ~(1<< PI_MovUp);
+						PlayerCommands &= ~(1<< PI_MovDown);
+                    }
+                }
+			}
 		case SDL_KEYDOWN:
 		if (event.key.keysym.scancode==SDL_SCANCODE_LEFT)
 		{
@@ -470,6 +566,10 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_X)
 		{
 			PlayerCommands &= ~(1<< PI_Jump);
+		}
+		if (event.key.keysym.scancode==SDL_SCANCODE_LEFT)
+		{
+			PlayerCommands &= ~(1<< PI_MovLeft);
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_RIGHT)
 		{

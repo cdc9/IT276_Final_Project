@@ -7,6 +7,8 @@
 #include "camera.h"
 #include "player.h"
 #include "projectile.h"
+#include "enemy.h"
+#include "vector.h"
 
 static Entity * EntityList = NULL;
 static Uint32 MaxEntities = 0;
@@ -60,7 +62,7 @@ Entity *entity_new()
         memset(&EntityList[i],0,sizeof(Entity));
         /*set some default values here*/
         EntityList[i].inuse = 1;
-		slog("entities have been used");
+		//slog("entities have been used");
 		max_ents++;
         return &EntityList[i];
     }
@@ -254,13 +256,14 @@ void GetFace(Entity *self)
 void update()
 {
 	int i = 0;
+	int j;
 	while (i < MaxEntities)
 	{
 		//do think function
-		if(EntityList[i].inuse == 1 && EntityList[i].think != NULL)
+		/*if(EntityList[i].inuse == 1 && EntityList[i].think != NULL)
 		{
 			(*EntityList[i].think)(&EntityList[i]);
-		}
+		}*/
 
 		//scrolls through entities in use
 		if(EntityList[i].inuse == 1)
@@ -284,8 +287,78 @@ void update()
 			{
 				UpdateBullet(tempEnt);
 			}
+			if(strcmp(tempEnt ->name, "EnemyProjectile1")==0)
+			{
+				UpdateEnemyBullet(tempEnt,1);
+			}
+			if(strcmp(tempEnt ->name, "EnemyProjectile2")==0)
+			{
+				UpdateEnemyBullet(tempEnt,2);
+			}
+			if(strcmp(tempEnt ->name, "EnemyProjectile3")==0)
+			{
+				UpdateEnemyBullet(tempEnt,3);
+			}
+			if(strcmp(tempEnt ->name, "Enemy")==0)
+			{
+				if(strcmp(tempEnt ->type, "type1")==0)
+				UpdateEnemy(tempEnt,1);
+			}
+			if(strcmp(tempEnt ->name, "Enemy")==0)
+			{
+				if(strcmp(tempEnt ->type, "type2")==0)
+				UpdateEnemy(tempEnt,2);
+			}
+			if(strcmp(tempEnt ->name, "Enemy")==0)
+			{
+				if(strcmp(tempEnt ->type, "type3")==0)
+				UpdateEnemy(tempEnt,3);
+			}
+		}
+		for(j=0; j <  MaxEntities; j++)
+		{
+			if(EntityList[j].inuse && j != i)
+			{
+				if(entity_intersect(&EntityList[i],&EntityList[j]))
+				{
+					//slog("The player is colliding %d", EntityList[i].name);
+					if(!strcmp(EntityList[i].name, "Player"))
+					{
+						if(!strcmp(EntityList[j].name, "Platform"))
+						{
+							EntityList[i].grounded = 0;
+							EntityList[i].position.y = EntityList[i].lastPosition.y;
+							//slog("it has been set to %d", EntityList[i].grounded);
+						}
+						if(!strcmp(EntityList[j].name, "EnemyProjectile1") ||!strcmp(EntityList[j].name, "EnemyProjectile2") ||!strcmp(EntityList[j].name, "EnemyProjectile3"))
+						{
+							EntityList[i].health -= EntityList[j].damage;
+							entity_free(&EntityList[j]);
+							//slog("it has been set to %d", EntityList[i].grounded);
+						}
+						//EntityList[i].position = EntityList[i].lastPosition;
+					}
+					if(!strcmp(EntityList[i].name, "Enemy"))
+					{
+						if(!strcmp(EntityList[i].type, "type1") ||!strcmp(EntityList[i].type, "type2"))
+						{
+							if(!strcmp(EntityList[j].name, "Platform"))
+							{
+								EntityList[i].position.y = EntityList[i].lastPosition.y;
+							}
+						}
+						if(!strcmp(EntityList[j].name, "Projectile"))
+						{
+							EntityList[i].health -= EntityList[j].damage;
+							entity_free(&EntityList[j]);
+						}
+					}
+				}
+			}
 		}
 		i++; // ANSWER!!!
+		
 	}
+	
 }
 /*eol@eof*/
