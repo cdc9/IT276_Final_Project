@@ -72,3 +72,30 @@ Entity *SpawnPlatform2(int x, int y)
 	slog("This platform should have been created");
 	return newent;
 }
+Entity *SpawnPlatform3(int x, int y)
+{
+	Entity *newent = NULL;
+	newent = entity_new();
+	if (newent == NULL)
+	{
+		fprintf(stderr, "Unable to generate player entity; %s", SDL_GetError());
+		exit(0);
+	}
+	strcpy(newent->name,"Platform2");
+	newent->sprite = loadSprite("images/levelPlatform3.png",16,508,1);
+	newent -> bounds.x = 0;
+	newent -> bounds.y = 0;
+	newent -> bounds.w = 16;
+	newent -> bounds.h = 508;
+	newent -> frameW = 160;	
+	newent -> frameH = 16; 
+	newent -> cameraEnt = 1;
+	newent -> frame = 0;
+	newent -> position.x = x;
+	newent -> position.y = y;
+	newent -> lastPosition.x = x;
+	newent -> lastPosition.y = y;
+	ThePlatform = newent;
+	slog("This platform should have been created");
+	return newent;
+}

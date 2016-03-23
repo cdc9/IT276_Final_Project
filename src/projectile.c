@@ -38,6 +38,10 @@ Entity *SpawnProjectile(int sx,int sy,float angle,float speed,float accel,int da
 	{
 		strcpy(newent->name,"EnemyProjectile3");
 	}
+	else if(type == 5)
+	{
+		strcpy(newent->name,"EnemyProjectile4");
+	}
 	newent -> damage = damage;
 	newent -> cameraEnt = 1;
 	newent -> position.x  = sx;
@@ -185,18 +189,18 @@ Entity *SpawnEnemyBullet(Entity *owner,int sx,int sy,float angle,float speed,flo
 	switch(type)
 	{
 		case 1:
-			newent->sprite = loadSprite("images/enemybullet.png",8,3,1);
+			newent->sprite = loadSprite("images/enemybullet2.png",8,4,1);
 			newent -> offset.x = 0;
 			newent -> offset.y = 12;
 			newent -> bounds.x = 0;
 			newent -> bounds.y = 0;
 			newent -> bounds.w = 8;
-			newent -> bounds.h = 3;
+			newent -> bounds.h = 4;
 			newent -> frameW = 8;
-			newent -> frameH = 3;
+			newent -> frameH = 4;
 			newent -> frame = 0;
 			newent -> frate = 30;
-			newent -> timer = 3000;
+			newent -> timer = 1000;
 			break;
 		case 2:
 			newent->sprite = loadSprite("images/firebullet.png",17,10,1);
@@ -226,6 +230,20 @@ Entity *SpawnEnemyBullet(Entity *owner,int sx,int sy,float angle,float speed,flo
 			newent -> frate = 30;
 			newent -> timer = 3000;
 			break;
+		case 4:
+			newent->sprite = loadSprite("images/bossbullet.png",16,14,1);
+			newent -> offset.x = 0;
+			newent -> offset.y = 0;
+			newent -> bounds.x = 0;
+			newent -> bounds.y = 0;
+			newent -> bounds.w = 16;
+			newent -> bounds.h = 14;
+			newent -> frameW = 16;
+			newent -> frameH = 14;
+			newent -> frame = 0;
+			newent -> frate = 30;
+			newent -> timer = 3000;
+			break;
 	}
 }
 void UpdateEnemyBullet(Entity *self,int type)
@@ -237,7 +255,7 @@ void UpdateEnemyBullet(Entity *self,int type)
 	if(self-> timer <= 0)
 	{
 		entity_free(self);
-		slog("bullet has been freed");
+		//slog("bullet has been freed");
 	}
 	switch(type)
 	{
@@ -278,8 +296,20 @@ void UpdateEnemyBullet(Entity *self,int type)
 				}
 				self->position.x -= self->velocity.x;
 				self->position.y -= self->velocity.y;
-		
-		break;
+				break;
+		case 4:
+			self->velocity.x += self->accel;
+			self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+				//self->grounded = 0;
+				if(self->movespeed > self->maxspeed)
+				{
+					self->velocity.y = 0;
+					self->velocity.x = self->maxspeed;
+					self->movespeed = self->maxspeed;
+				}
+				self->position.x -= self->velocity.x;
+				break;
+		//break;
 	}
 	self -> lastPosition = self-> position;
 }

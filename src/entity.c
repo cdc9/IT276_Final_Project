@@ -18,6 +18,7 @@ static Uint32 MaxEntities = 0;
 int entity_intersect(Entity *a, Entity *b);			//Collision code
 int entity_intersect_rect(Entity *a,SDL_Rect r);
 int max_ents;
+extern int currentLevel;
 
 void initEntitySystem(int maxEntities)
 {
@@ -79,7 +80,7 @@ void entity_free(Entity **entity) //original
     *entity = NULL;
 }
 */
-void entity_free(Entity *entity) //TODO: double pointer bs
+void entity_free(Entity *entity) 
 {
 	entity->inuse = 0;
 	max_ents--;
@@ -87,7 +88,17 @@ void entity_free(Entity *entity) //TODO: double pointer bs
     freeSprite(entity->sprite);
     entity = NULL;
 }
+void entity_free_all()
+{
+	int i;
+    Entity *ent = NULL;
+    for (i = 0; i < MaxEntities;i++)
+    {
+        ent= &EntityList[i];
+        entity_free(ent);
+    }
 
+}
 void entity_draw(Entity *ent,SDL_Renderer *render)
 {
     Vec2d position;
@@ -299,6 +310,10 @@ void update()
 			{
 				UpdateEnemyBullet(tempEnt,3);
 			}
+			if(strcmp(tempEnt ->name, "EnemyProjectile4")==0)
+			{
+				UpdateEnemyBullet(tempEnt,4);
+			}
 			if(strcmp(tempEnt ->name, "Enemy")==0)
 			{
 				if(strcmp(tempEnt ->type, "type1")==0)
@@ -313,6 +328,11 @@ void update()
 			{
 				if(strcmp(tempEnt ->type, "type3")==0)
 				UpdateEnemy(tempEnt,3);
+			}
+			if(strcmp(tempEnt ->name, "Enemy")==0)
+			{
+				if(strcmp(tempEnt ->type, "type4")==0)
+				UpdateEnemy(tempEnt,4);
 			}
 		}
 		for(j=0; j <  MaxEntities; j++)
@@ -330,19 +350,28 @@ void update()
 							EntityList[i].position.y = EntityList[i].lastPosition.y;
 							//slog("it has been set to %d", EntityList[i].grounded);
 						}
-						if(!strcmp(EntityList[j].name, "EnemyProjectile1") ||!strcmp(EntityList[j].name, "EnemyProjectile2") ||!strcmp(EntityList[j].name, "EnemyProjectile3"))
+						if(!strcmp(EntityList[j].name, "Platform2"))
+						{
+							EntityList[i].grounded = 0;
+							EntityList[i].position.x = EntityList[i].lastPosition.x;
+							//slog("it has been set to %d", EntityList[i].grounded);
+						}
+						if(!strcmp(EntityList[j].name, "EnemyProjectile1") ||!strcmp(EntityList[j].name, "EnemyProjectile2") ||!strcmp(EntityList[j].name, "EnemyProjectile3") ||!strcmp(EntityList[j].name, "EnemyProjectile4"))
 						{
 							EntityList[i].health -= EntityList[j].damage;
 							entity_free(&EntityList[j]);
 							//slog("it has been set to %d", EntityList[i].grounded);
 						}
-						//EntityList[i].position = EntityList[i].lastPosition;
+						if(!strcmp(EntityList[j].name, "Enemy"))
+						{
+							EntityList[i].health -= 5;
+						}
 					}
 					if(!strcmp(EntityList[i].name, "Enemy"))
 					{
-						if(!strcmp(EntityList[i].type, "type1") ||!strcmp(EntityList[i].type, "type2"))
+						if(!strcmp(EntityList[i].type, "type1") ||!strcmp(EntityList[i].type, "type2") ||!strcmp(EntityList[i].type, "type4"))
 						{
-							if(!strcmp(EntityList[j].name, "Platform"))
+							if(!strcmp(EntityList[j].name, "Platform")||!strcmp(EntityList[j].name, "Platform2"))
 							{
 								EntityList[i].position.y = EntityList[i].lastPosition.y;
 							}

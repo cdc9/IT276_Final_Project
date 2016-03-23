@@ -61,6 +61,7 @@ Sprite *loadSprite(char *filename,int frameW,int frameH, int FPL)
         slog("error: using sprite system uninitialized");
         return NULL;
     }
+	
     for (i = 0;i < MaxSprites;i++)
     {
         if (spriteList[i].refCount == 0)
@@ -73,6 +74,7 @@ Sprite *loadSprite(char *filename,int frameW,int frameH, int FPL)
             return &spriteList[i];
         }
     }
+	
     /*not already loaded, need to load a new one*/
     surface = IMG_Load(filename);
     if (!surface)

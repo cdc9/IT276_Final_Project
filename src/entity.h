@@ -36,9 +36,11 @@ typedef struct Entity_S
 	float	 maxspeed, movespeed;	/**< The maximum speed of the entity, and the entities current speed */
 	int		 accel;				/**< The accelaration of the entity */
 	float	 jumpAccel,maxJumpSpeed;	/**< The jump accelaration of the entity */
-	int		 grounded;				/**< int to check see if the player is on the ground */
+	int		 grounded;			/**< int to check see if the player is on the ground */
 	int		 timer;				/**< timer for various entities*/
-	int		 bulletTimer;				/**< bullet timer for various entities*/
+	int		 bulletTimer;		/**< bullet timer for various entities*/
+	int		 bulletTimer2;		/**< bullet timer for boss entities*/
+	int		 switcher;			/**< int to show when boos will be shoot high or low*/
 	int		 damage;			/**< Damage of the entity*/
 	int		 powerup;			/**< Current powerup the player has*/
     void     (*draw)(struct Entity_S *self,SDL_Renderer *renderer); /**< Defining the draw entity */
@@ -81,6 +83,10 @@ void closeEntitySystem();
  */
 void entity_free(Entity *entity);
 
+/**
+ * @brief goes through entire entity list and removes all current entities
+ */
+void entity_free_all();
 /**
  * @brief Draws entity along with its sprite to its newest location. Also works with camera to update its position.
  * @param ent accept the entity that you wish draw 

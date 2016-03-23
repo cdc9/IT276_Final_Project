@@ -23,6 +23,12 @@ Entity *SpawnPlatform(int x, int y);
  * @param y The y position
  */
 Entity *SpawnPlatform2(int x, int y);
+/**
+ * @brief Spawns the platform, assigns all of it's values and draws the sprite to screen
+ * @param x The x position
+ * @param y The y position
+ */
+Entity *SpawnPlatform3(int x, int y);
 
 
 #endif

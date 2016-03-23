@@ -32,8 +32,8 @@ Entity *SpawnEnemy(int x, int y,int type)
 	case 1:
 		strcpy(newent->type,"type1");
 		newent->sprite = loadSprite("images/enemy1.png",24,26,1);
-		newent -> bounds.x = 1;
-		newent -> bounds.y = 1;
+		newent -> bounds.x = 0;
+		newent -> bounds.y = 0;
 		newent -> bounds.w = 24;
 		newent -> bounds.h = 26;
 		newent -> maxhealth = 20;
@@ -50,8 +50,8 @@ Entity *SpawnEnemy(int x, int y,int type)
 		strcpy(newent->type,"type2");
 		slog("Enemy type 2 is being drawn");
 		newent->sprite = loadSprite("images/enemy2.png",16,32,1);
-		newent -> bounds.x = 1;
-		newent -> bounds.y = 1;
+		newent -> bounds.x = 0;
+		newent -> bounds.y = 0;
 		newent -> bounds.w = 16;
 		newent -> bounds.h = 32;
 		newent -> maxhealth = 20;
@@ -67,8 +67,8 @@ Entity *SpawnEnemy(int x, int y,int type)
 	case 3:
 		strcpy(newent->type,"type3");
 		newent->sprite = loadSprite("images/enemy3.png",32,22,1);
-		newent -> bounds.x = x;
-		newent -> bounds.y = y;
+		newent -> bounds.x = 0;
+		newent -> bounds.y = 0;
 		newent -> bounds.w = 32;
 		newent -> bounds.h = 22;
 		newent -> maxhealth = 20;
@@ -81,6 +81,25 @@ Entity *SpawnEnemy(int x, int y,int type)
 		newent -> state = 0;
 		newent -> timer = 0;
 		break;
+	case 4:
+		strcpy(newent->type,"type4");
+		newent->sprite = loadSprite("images/boss.png",121,135,1);
+		newent -> bounds.x = 0;
+		newent -> bounds.y = 0;
+		newent -> bounds.w = 121;
+		newent -> bounds.h = 135;
+		newent -> maxhealth = 150;
+		newent -> health = 150;
+		newent -> velocity.x = 0;
+		newent -> velocity.y = 0;
+		newent -> maxspeed = 0;
+		newent -> movespeed = 0;
+		newent -> accel = 0;
+		newent -> state = 0;
+		newent -> timer = 0;
+		newent -> switcher = 0;
+		newent -> bulletTimer2 = 3000;
+
 	}
 	newent -> cameraEnt = 1;
 	newent -> frame = 0;
@@ -101,6 +120,7 @@ void UpdateEnemy(Entity *self, int type)
 	}
 	switch(type)
 	{
+		//Standard stationary shooter type enemy
 		case 1:
 			if(self-> bulletTimer <= 0)
 			{
@@ -115,6 +135,7 @@ void UpdateEnemy(Entity *self, int type)
 			//Entity *SpawnEnemyBullet(Entity *owner,int sx,int sy,float angle,float speed,float accel, int damage,int type)
 			//SpawnEnemyBullet(self,self->position.x,self->position.y,0,8,2, 10,1);
 			break;
+		//Flamethrower type enemy
 		case 2:
 			if(self-> bulletTimer <= 0)
 			{
@@ -128,6 +149,7 @@ void UpdateEnemy(Entity *self, int type)
 			self->position.y += 2;
 			//SpawnEnemyBullet(self,self->position.x,self->position.y,0,8,2, 10,2);
 			break;
+		//Flying type enemy
 		case 3:
 			self->velocity.x -= self->accel;
 			self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
@@ -148,6 +170,52 @@ void UpdateEnemy(Entity *self, int type)
 			{
 				self -> bulletTimer -= deltaTime;
 			}
+			break;
+		//Boss type enemy
+		case 4:
+			if(self -> switcher == 0)
+			{
+				if(self-> bulletTimer <= 0)
+				{
+					SpawnEnemyBullet(self,self->position.x,self->position.y +10,0,8,2, 10,4,5);//TODO: change for enemy bullets`
+					self-> bulletTimer = 750;
+				}
+				if(self-> bulletTimer >=  0)
+				{
+					self -> bulletTimer -= deltaTime;
+				}
+			}
+			if(self -> switcher == 1)
+			{
+				if(self-> bulletTimer <= 0)
+				{
+					SpawnEnemyBullet(self,self->position.x,self->position.y + 110,0,8,2, 10,4,5);//TODO: change for enemy bullets`
+					self-> bulletTimer = 750;
+				}
+				if(self-> bulletTimer >=  0)
+				{
+					self -> bulletTimer -= deltaTime;
+				}
+			}
+			if(self -> bulletTimer2 >= 0)
+			{
+				self -> bulletTimer2 -= deltaTime;
+			}
+			if(self -> bulletTimer2 <= 0)
+			{
+				self -> bulletTimer2 = 3000;
+				if(self-> switcher == 0)
+				{
+					self -> switcher = 1;
+					break;
+				}
+				if(self-> switcher == 1)
+				{
+					self -> switcher = 0;
+					break;
+				}
+			}
+			self->position.y += 2;
 			break;
 	}
 }
