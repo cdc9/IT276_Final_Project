@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <SDL.h>
+#include <SDL_mixer.h>
 
 #include "player.h"
 #include "graphics.h"
@@ -39,6 +40,12 @@ Entity *ThePlayer = NULL;
 //void FinalOutput();		****This is just for the score
 
 Player ThisPlayer;
+
+//The music that will be played
+extern Mix_Music *gMusic;
+
+//The sound effects that will be used
+extern Mix_Chunk *gScratch;
 
 /**
  * @brief Spawn the player in the level. Defines the player's attributes 
@@ -84,6 +91,7 @@ Entity *SpawnPlayer(int x, int y)
 	newent -> maxJumpSpeed = 5;
 	newent -> timer = 0;
 	newent -> powerup = 0;
+	newent ->facing = 3;
 	//drawSprite(newent ->sprite, 5,vec2d(x,y));
 	//UpdatePlayer(newent);
 	ThePlayer = newent;
@@ -151,6 +159,30 @@ void PlayerThink(Entity *self)
 	GetFace(self);
 	if((self->state != ST_DEAD) && (self-> state != ST_DIE))
 	{
+		if(PlayerCommands == 0 )
+		{
+			if(self->facing == 0 || self->facing == 1 || self->facing == 2 || self->facing == 6)
+			{
+				self->facing = 0;
+				slog("you should be facing left!");
+			}
+			if(self->facing == 3 || self->facing == 4 || self->facing == 5 || self->facing == 7)
+			{
+				self->facing = 3;
+				slog("you should be facing right!");
+			}
+		}
+		if(PlayerCommands & (1<< PI_MovUp) && !(PlayerCommands & (1<< PI_MovLeft) || PlayerCommands & (1<< PI_MovRight)))
+		{ 
+			if(self->facing == 0 || self-> facing == 1 || self -> facing == 2)
+			{
+				self->facing = 6;
+			}
+			if(self->facing == 3 || self-> facing == 4 || self -> facing == 5)
+			{
+				self->facing = 7;
+			}
+		}
 		
 		if(PlayerCommands & (1<<PI_MovLeft))
 		{      
@@ -166,7 +198,20 @@ void PlayerThink(Entity *self)
 			self->position.x += self->velocity.x;
 			moving = 1;
 			self->sprite = loadSprite("images/ryuSprite3.png",17,33,1);
+			if(PlayerCommands & (1<<PI_MovLeft) && PlayerCommands & (1<<PI_MovUp))
+			{
 			self->facing = 1;
+			slog("You are pointing diagonally upleft!!!");
+			}
+			else if(PlayerCommands & (1<<PI_MovLeft) && PlayerCommands & (1<<PI_MovDown))
+			{
+			self->facing = 2;
+			slog("You are pointing diagonally downleft!!!");
+			}
+			else 
+			{
+				self->facing = 0;
+			}
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,2,0,self->movespeed,self->movespeed * 4);
 		}
 		
@@ -184,9 +229,24 @@ void PlayerThink(Entity *self)
 			self->position.x += self->velocity.x;
 			moving = 1;
 			self->sprite = loadSprite("images/ryuSprite2.png",17,33,1);
-			self->facing = 0;
+
+			if(PlayerCommands & (1<<PI_MovRight) && PlayerCommands & (1<<PI_MovUp))
+			{
+			self->facing = 4;
+			slog("You are pointing diagonally upright!!!");
+			}
+			else if(PlayerCommands & (1<<PI_MovRight) && PlayerCommands & (1<<PI_MovDown))
+			{
+			self->facing = 5;
+			slog("You are pointing diagonally downright!!!");
+			}
+			else 
+			{
+				self->facing = 3;
+			}
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,-2,0,self->movespeed,self->movespeed * 4);
 		}
+		//flying power up
 		if(self->powerup == 4)
 		{
 			 if(PlayerCommands & (1<< PI_MovUp))
@@ -231,12 +291,14 @@ void PlayerThink(Entity *self)
 			self-> velocity.x = 0;
 			self-> velocity.y = 0;
 		}
+		//This is what handles shooting a bullet
 		if(PlayerCommands & (1<< PI_Fire)  && self->bulletTimer <=0 )
 		{
+			//Check to see if the player currently has a power up
 			switch(self->powerup)
 			{
 			case 0:
-				self-> bulletTimer = 500;
+				self-> bulletTimer = 500; //How long until the next shot
 				SpawnBullet(self,self->position.x + self-> offset.x,self->position.y + self->offset.y,0,5,1,5,0,1);
 				break;
 			case 1:
@@ -253,6 +315,7 @@ void PlayerThink(Entity *self)
 				break;
 			}
 		}
+		//Giving the player a power up
 		if(PlayerCommands & (1<< PI_Powerup1))
 		{ 
 			GivePlayerPowerUp(self, 0);
@@ -514,12 +577,34 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_LEFT)
 		{
 			PlayerCommands |= (1<< PI_MovLeft);
+			if( Mix_PlayingMusic() == 0 )
+			{
+				//Play the music
+				Mix_PlayMusic( gMusic, -1 );
+			}
+			//If the music is paused
+            if( Mix_PausedMusic() == 1 )
+            {
+                //Resume the music
+                Mix_ResumeMusic();
+            }
 
 			//PlayerCommands = PI_Fire;
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_RIGHT)
 		{
 			PlayerCommands |= (1<< PI_MovRight);
+			if( Mix_PlayingMusic() == 0 )
+			{
+				//Play the music
+				Mix_PlayMusic( gMusic, -1 );
+			}
+			//If the music is paused
+            if( Mix_PausedMusic() == 1 )
+            {
+                //Resume the music
+                Mix_ResumeMusic();
+            }
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_UP)
 		{
@@ -533,7 +618,8 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_X)
 		{
 
-			PlayerCommands |= (1<< PI_Jump);		
+			PlayerCommands |= (1<< PI_Jump);
+			Mix_PlayChannel( -1, gScratch, 0 );
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_C)
 		{
@@ -559,6 +645,30 @@ void UpdateInput()
 		{
 			PlayerCommands |= (1<< PI_Powerup5);		
 		}
+		if (event.key.keysym.scancode==SDL_SCANCODE_6)
+		{
+			if( Mix_PlayingMusic() == 0 )
+			{
+				//Play the music
+				Mix_PlayMusic( gMusic, -1 );
+			}
+			//If music is being played
+            else
+            {
+                //If the music is paused
+                if( Mix_PausedMusic() == 1 )
+                {
+                    //Resume the music
+                    Mix_ResumeMusic();
+                }
+                //If the music is playing
+                else
+                {
+                    //Pause the music
+                    Mix_PauseMusic();
+                }
+            }
+		}
 		break;
 
 		case SDL_KEYUP:
@@ -570,19 +680,31 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_LEFT)
 		{
 			PlayerCommands &= ~(1<< PI_MovLeft);
+			if( Mix_PlayingMusic() == 1 )
+			{
+				//Play the music
+				Mix_PauseMusic();
+			}
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_RIGHT)
 		{
 			PlayerCommands &= ~(1<< PI_MovRight);
+			if( Mix_PlayingMusic() == 1 )
+			{
+				//Play the music
+				Mix_PauseMusic();
+			}
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_UP)
 		{
 			PlayerCommands &= ~(1<< PI_MovUp);
+			PlayerCommands = 0;
 			//PlayerCommands = PI_Jump;
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_DOWN)
 		{
 			PlayerCommands &= ~(1<< PI_MovDown);
+			PlayerCommands = 0;
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_C)
 		{

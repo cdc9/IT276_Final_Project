@@ -10,11 +10,13 @@
 #include "camera.h"
 #include "player.h"
 
+#define PI	3.141589
+
 extern int deltaTime;
 
 Entity *SpawnProjectile(int sx,int sy,float angle,float speed,float accel,int damage,int type)
 {
-	//float cosine, sine;
+	float cosine, sine;
 	Entity *newent = NULL;
 	newent = entity_new(); 
 	if (newent == NULL)
@@ -149,7 +151,64 @@ void UpdateBullet(Entity *self)
 		entity_free(self);
 		//slog("bullet has been freed");
 	}
+	//Facing left neutral
 	if(self->facing == 0)
+	{
+		self->velocity.x += self->accel;
+		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+		//self->grounded = 0;
+		if(self->movespeed > self->maxspeed)
+		{
+			self->velocity.y = 0;
+			self->velocity.x = self->maxspeed;
+			self->movespeed = self->maxspeed;
+		}
+		self->position.x -= self->velocity.x;
+		/* Diagonal up left
+		self-> velocity.y = self-> velocity.x * sin(PI / 8 );
+		self-> velocity.x = self-> velocity.x * cos(PI / 8 );
+		self-> velocity.y *= -1;
+		self->position.x += self->velocity.x;
+		self->position.y += self->velocity.y;
+		*/
+	}
+	//Facing left and up
+	if(self->facing == 1 )
+	{
+		self->velocity.x += self->accel;
+		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+		//self->grounded = 0;
+		if(self->movespeed > self->maxspeed)
+		{
+			self->velocity.y = 0;
+			self->velocity.x = self->maxspeed;
+			self->movespeed = self->maxspeed;
+		}
+		self-> velocity.y = self-> velocity.x * sin(PI / 8 );
+		self-> velocity.x = self-> velocity.x * cos(PI / 8 );
+		self-> velocity.y *= -1;
+		self->position.x -= self->velocity.x;
+		self->position.y += self->velocity.y;
+	}
+	//Facing left and down
+	if(self->facing == 2 )
+	{
+		self->velocity.x += self->accel;
+		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+		//self->grounded = 0;
+		if(self->movespeed > self->maxspeed)
+		{
+			self->velocity.y = 0;
+			self->velocity.x = self->maxspeed;
+			self->movespeed = self->maxspeed;
+		}
+		self-> velocity.y = self-> velocity.x * sin(PI / 8 );
+		self-> velocity.x = self-> velocity.x * cos(PI / 8 );
+		self->position.x -= self->velocity.x;
+		self->position.y += self->velocity.y;
+	}
+	//Facing right neutral
+	if(self->facing == 3 )
 	{
 		self->velocity.x += self->accel;
 		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
@@ -162,7 +221,8 @@ void UpdateBullet(Entity *self)
 		}
 		self->position.x += self->velocity.x;
 	}
-	if(self->facing == 1)
+	//Facing right and up
+	if(self->facing == 4 )
 	{
 		self->velocity.x += self->accel;
 		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
@@ -173,7 +233,41 @@ void UpdateBullet(Entity *self)
 			self->velocity.x = self->maxspeed;
 			self->movespeed = self->maxspeed;
 		}
-		self->position.x -= self->velocity.x;
+		self-> velocity.y = self-> velocity.x * sin(PI / 8 );
+		self-> velocity.x = self-> velocity.x * cos(PI / 8 );
+		self-> velocity.y *= -1;
+		self->position.x += self->velocity.x;
+		self->position.y += self->velocity.y;
+	}
+	//Facing right and down
+	if(self->facing == 5 )
+	{
+		self->velocity.x += self->accel;
+		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+		//self->grounded = 0;
+		if(self->movespeed > self->maxspeed)
+		{
+			self->velocity.y = 0;
+			self->velocity.x = self->maxspeed;
+			self->movespeed = self->maxspeed;
+		}
+		self-> velocity.y = self-> velocity.x * sin(PI / 8 );
+		self-> velocity.x = self-> velocity.x * cos(PI / 8 );
+		self->position.x += self->velocity.x;
+		self->position.y += self->velocity.y;
+	}
+	//Facing up
+	if(self->facing == 6 || self-> facing == 7 )
+	{
+		self->velocity.x += self->accel;
+		self->movespeed = VectorLength(self->velocity.x,self->velocity.y);
+		//self->grounded = 0;
+		if(self->movespeed > self->maxspeed)
+		{
+			self->velocity.y = self->maxspeed;
+			self->movespeed = self->maxspeed;
+		}
+		self->position.y -= self->velocity.y;
 	}
 	self -> lastPosition = self-> position;
 }

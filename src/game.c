@@ -2,6 +2,7 @@
 #include <string.h>
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_mixer.h>
 #include <stdio.h>
 #include "graphics.h"
 #include "simple_logger.h"
@@ -38,6 +39,12 @@ void addCoordinateToFile(char *filepath,int x, int y);
 Vec2d camSize;
 int deltaTime;
 
+//The music that will be played
+extern Mix_Music *gMusic = NULL;
+
+//The sound effects that will be used
+extern Mix_Chunk *gScratch = NULL;
+
 /**
  * @brief Main game loop. Initialize everything and have a loop for update functions.
  */
@@ -73,6 +80,20 @@ int main(int argc, char *argv[])
   bg = loadSprite("images/background.png",1032,774,1);
   bg2 = loadSprite("images/background2.png",2000,1500,1);
 
+  
+  	   //Load music
+    gMusic = Mix_LoadMUS( "sounds/piano.wav" );
+    if( gMusic == NULL )
+    {
+        printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+	  //Load sound effects
+    gScratch = Mix_LoadWAV( "sounds/jump2.wav" );
+    if( gScratch == NULL )
+    {
+        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+
   do
   {
 	deltaTime = SDL_GetTicks() - lastTime;
@@ -95,7 +116,14 @@ int main(int argc, char *argv[])
     NextFrame();
     SDL_PumpEvents();
     keys = SDL_GetKeyboardState(NULL);
-
+	/*
+	 //If there is no music playing
+    if( Mix_PlayingMusic() == 0 )
+    {
+        //Play the music
+        Mix_PlayMusic( gMusic, -1 );
+    }
+	*/
     if(keys[SDL_SCANCODE_ESCAPE])
     {
         done = 1;
@@ -227,8 +255,8 @@ void Init_Platform()
 		SpawnPlatform2(2200,650);
 		SpawnPlatform3(2750,0);
 		SpawnPlatform3(2750,508);
-		SpawnPlatform(1550,720);
-		SpawnPlatform(1040,720);
+		SpawnPlatform(1550,730);
+		SpawnPlatform(1040,730);
 		SpawnPlatform(1550,870);
 		SpawnPlatform(1040,870);
 	}

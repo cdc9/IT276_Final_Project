@@ -1,26 +1,27 @@
-﻿Build started 3/22/2016 9:38:30 PM.
+﻿Build started 4/20/2016 7:51:29 PM.
      1>Project "C:\Worst ninja ever\win32\gametest.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
-         Creating "Release\gametest.unsuccessfulbuild" because "AlwaysCreate" was specified.
+         Touching "Release\gametest.unsuccessfulbuild".
        ClCompile:
          c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /Od /Oi /Oy- /GL /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\src\game.c
          game.c
-     1>..\src\game.c(84): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(84): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(85): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(85): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(86): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(86): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(90): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(90): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(91): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(91): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(56): warning C4101: 'sprite' : unreferenced local variable
-     1>..\src\game.c(50): warning C4101: 'my' : unreferenced local variable
-     1>..\src\game.c(50): warning C4101: 'mx' : unreferenced local variable
-     1>..\src\game.c(55): warning C4101: 'imagepath' : unreferenced local variable
+     1>..\src\game.c(105): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(105): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(106): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(106): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(107): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(107): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(111): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(111): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(112): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(112): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\game.c(63): warning C4101: 'sprite' : unreferenced local variable
+     1>..\src\game.c(57): warning C4101: 'my' : unreferenced local variable
+     1>..\src\game.c(57): warning C4101: 'mx' : unreferenced local variable
+     1>..\src\game.c(62): warning C4101: 'imagepath' : unreferenced local variable
        Link:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"../gametest.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL2.lib SDL2main.lib SDL2_image.lib /MANIFEST /ManifestFile:"Release\gametest.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Worst ninja ever\gametest.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"../gametest.lib" /MACHINE:X86 Release\camera.obj
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"../gametest.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL2.lib SDL2main.lib SDL2_image.lib SDL2_mixer.lib /MANIFEST /ManifestFile:"Release\gametest.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Worst ninja ever\gametest.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"../gametest.lib" /MACHINE:X86 Release\camera.obj
+         Release\cJSON.obj
          Release\enemy.obj
          Release\entity.obj
          Release\game.obj
@@ -32,7 +33,7 @@
          Release\sprite.obj
          Release\vector.obj
          Generating code
-     1>c:\worst ninja ever\src\projectile.c(248): warning C4716: 'SpawnEnemyBullet' : must return a value
+     1>c:\worst ninja ever\src\projectile.c(342): warning C4716: 'SpawnEnemyBullet' : must return a value
          Finished generating code
          gametest.vcxproj -> C:\Worst ninja ever\win32\../gametest.exe
        Manifest:
@@ -44,4 +45,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.75
+Time Elapsed 00:00:01.57

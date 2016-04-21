@@ -131,6 +131,12 @@ void Init_Graphics(
             {
                 printf( "SDL_image could not initialize! SDL_image Error: %s\n", IMG_GetError() );
             }
+
+			 //Initialize SDL_mixer
+            if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+            {
+                printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+            }
 }
 
 void gt_graphics_render_surface_to_screen(SDL_Surface *surface,SDL_Rect srcRect,int x,int y)
@@ -239,6 +245,7 @@ void gt_graphics_close()
     __gt_graphics_renderer = NULL;
     __gt_graphics_texture = NULL;
     __gt_graphics_temp_buffer = NULL;
+
 }
 
 SDL_Renderer *gt_graphics_get_active_renderer()
