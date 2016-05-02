@@ -42,7 +42,6 @@ Entity *SpawnPlatform(int x, int y)
 	newent -> lastPosition.x = x;
 	newent -> lastPosition.y = y;
 	ThePlatform = newent;
-	slog("This platform should have been created");
 	return newent;
 }
 Entity *SpawnPlatform2(int x, int y)
@@ -69,7 +68,6 @@ Entity *SpawnPlatform2(int x, int y)
 	newent -> lastPosition.x = x;
 	newent -> lastPosition.y = y;
 	ThePlatform = newent;
-	slog("This platform should have been created");
 	return newent;
 }
 Entity *SpawnPlatform3(int x, int y)
@@ -96,6 +94,5 @@ Entity *SpawnPlatform3(int x, int y)
 	newent -> lastPosition.x = x;
 	newent -> lastPosition.y = y;
 	ThePlatform = newent;
-	slog("This platform should have been created");
 	return newent;
 }

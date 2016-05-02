@@ -97,7 +97,6 @@ Sprite *loadSprite(char *filename,int frameW,int frameH, int FPL)
 			spriteList[i].refCount++;
 			sprintf(spriteList[i].filename,"%s",filename);
 
-			slog("Loaded the sprite");
 			return &spriteList[i];
 		}
 	}

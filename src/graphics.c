@@ -137,6 +137,13 @@ void Init_Graphics(
             {
                 printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
             }
+			  //Initialize text
+			if( TTF_Init() == -1 )
+			{
+				printf("Oh My Goodness, an error : %s", TTF_GetError()); 
+			}
+			
+			
 }
 
 void gt_graphics_render_surface_to_screen(SDL_Surface *surface,SDL_Rect srcRect,int x,int y)
@@ -256,4 +263,9 @@ SDL_Renderer *gt_graphics_get_active_renderer()
 Uint32 gt_graphics_get_system_time()
 {
     return gt_graphics_now;
+}
+
+SDL_Surface *__gt_graphics_get_active_surface()
+{
+	return __gt_graphics_surface;
 }

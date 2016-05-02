@@ -10,6 +10,7 @@
 #include "projectile.h"
 #include "simple_logger.h"
 #include "camera.h"
+#include "pausemenu.h"
 
 extern SDL_Surface *screen;
 extern Entity *ThePlayer;
@@ -33,6 +34,7 @@ int yDir = 0;
 
 int PlayerCommands = PI_NULL;
 Entity *ThePlayer = NULL;
+int keyRelease;
 //SDL_Surface *titlebar = NULL;
 //int attackleft = SDLK_LEFT;
 //void UpdatePlayer(Entity *self);
@@ -46,6 +48,10 @@ extern Mix_Music *gMusic;
 
 //The sound effects that will be used
 extern Mix_Chunk *gScratch;
+
+//HUD stuff
+SDL_Rect healthBar;
+SDL_Rect powerUpBox;
 
 /**
  * @brief Spawn the player in the level. Defines the player's attributes 
@@ -95,12 +101,13 @@ Entity *SpawnPlayer(int x, int y)
 	//drawSprite(newent ->sprite, 5,vec2d(x,y));
 	//UpdatePlayer(newent);
 	ThePlayer = newent;
+	Init_HUD(newent);
 	return newent;
 	//atexit(FinalOutput);
 
 }
 
-Entity *SpawnDummy(int x, int y)
+Entity *SpawnDummy(int x, int y, int type)
 {
 	Entity *newent = NULL;
 	newent = entity_new();
@@ -113,26 +120,18 @@ Entity *SpawnDummy(int x, int y)
 	newent->sprite = loadSprite("images/marioSprite3.png",200,200,1);
 	//newent->sprite-> imageSize.x = 32;
 	//newent->sprite-> imageSize.y = 32;
-	newent -> frameW = 200;	//TODO: make sure that this is always accurate
-	newent -> frameH = 200; //TODO: make sure that this is always accurate
+	newent -> frameW = 16;	//TODO: make sure that this is always accurate
+	newent -> frameH = 32; //TODO: make sure that this is always accurate
+	newent -> spawnType = type;
 	newent -> update = UpdateDummy;
 	newent -> think = DummyThink;
-	newent -> maxhealth = 100;
-	newent -> health = 100;
-	newent -> frame = 0;
 	newent -> cameraEnt = 1;
 	newent -> position.x = x;
 	newent -> position.y = y;
-	newent -> velocity.x = 0;
-	newent -> velocity.y = 0;
-	newent -> maxspeed = 3;
-	newent -> movespeed = 0;
-	newent -> accel = 2;
-	newent -> bounds.x = x;
-	newent -> bounds.y = y;
+	newent -> bounds.x = 0;
+	newent -> bounds.y = 0;
 	newent -> bounds.w = 200;
 	newent -> bounds.h = 200;
-	newent -> state = 0;
 	newent -> grounded = 1;
 	//entity_draw(newent, gt_graphics_get_active_renderer());
 	//drawSprite(newent ->sprite, 0,vec2d(x,y));
@@ -140,7 +139,30 @@ Entity *SpawnDummy(int x, int y)
 	//ThePlayer = newent;
 	return newent;
 	//atexit(FinalOutput);
+}
 
+Entity *SpawnCameraCollider()
+{
+	Vec2d camPos;
+	Vec2d camSize;
+	Entity *newent = NULL;
+	newent = entity_new();
+	if (newent == NULL)
+	{
+		fprintf(stderr, "Unable to generate player entity; %s", SDL_GetError());
+		exit(0);
+	}
+	strcpy(newent->name,"Camera");
+	camPos = camera_get_position();
+	camSize = camera_get_size();
+	newent -> position.x = camPos.x;
+	newent -> position.y = camPos.y;
+	newent -> bounds.x = 0;
+	newent -> bounds.y = 0;
+	newent -> bounds.w = 800;
+	newent -> bounds.h = 600;
+	slog("should have spawned the collider");
+	//SDL_RenderCopyEx(
 }
 
 void PlayerThink(Entity *self)
@@ -159,19 +181,7 @@ void PlayerThink(Entity *self)
 	GetFace(self);
 	if((self->state != ST_DEAD) && (self-> state != ST_DIE))
 	{
-		if(PlayerCommands == 0 )
-		{
-			if(self->facing == 0 || self->facing == 1 || self->facing == 2 || self->facing == 6)
-			{
-				self->facing = 0;
-				slog("you should be facing left!");
-			}
-			if(self->facing == 3 || self->facing == 4 || self->facing == 5 || self->facing == 7)
-			{
-				self->facing = 3;
-				slog("you should be facing right!");
-			}
-		}
+		
 		if(PlayerCommands & (1<< PI_MovUp) && !(PlayerCommands & (1<< PI_MovLeft) || PlayerCommands & (1<< PI_MovRight)))
 		{ 
 			if(self->facing == 0 || self-> facing == 1 || self -> facing == 2)
@@ -233,18 +243,29 @@ void PlayerThink(Entity *self)
 			if(PlayerCommands & (1<<PI_MovRight) && PlayerCommands & (1<<PI_MovUp))
 			{
 			self->facing = 4;
-			slog("You are pointing diagonally upright!!!");
 			}
 			else if(PlayerCommands & (1<<PI_MovRight) && PlayerCommands & (1<<PI_MovDown))
 			{
 			self->facing = 5;
-			slog("You are pointing diagonally downright!!!");
 			}
 			else 
 			{
 				self->facing = 3;
 			}
 			//SpawnThrust(IndexColor(self->Color),self->s.x + 24,self->s.y + 24,-2,0,self->movespeed,self->movespeed * 4);
+		}
+		if(keyRelease == 1)
+		{ 
+			slog("you have released the key!");
+			if(self->facing == 0 || self-> facing == 1 || self -> facing == 2 || self->facing == 6 )
+			{
+				self->facing = 0;
+			}
+			if(self->facing == 3 || self-> facing == 4 || self -> facing == 5 || self -> facing == 7)
+			{
+				self->facing = 3;
+			}
+			keyRelease = 0;
 		}
 		//flying power up
 		if(self->powerup == 4)
@@ -493,6 +514,12 @@ void UpdatePlayer(Entity *self)
 
 }
 
+void UpdateCameraCollider(Entity *self)
+{
+	self-> position.x = _Camera.x;
+	self-> position.y = _Camera.y;
+}
+
 void UpdateInput()
 {
 	static int pressed = 0;
@@ -609,6 +636,7 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_UP)
 		{
 			PlayerCommands |= (1<< PI_MovUp);
+
 			//PlayerCommands = PI_Jump;
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_DOWN)
@@ -669,6 +697,7 @@ void UpdateInput()
                 }
             }
 		}
+	
 		break;
 
 		case SDL_KEYUP:
@@ -698,13 +727,13 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_UP)
 		{
 			PlayerCommands &= ~(1<< PI_MovUp);
-			PlayerCommands = 0;
+			keyRelease =1;
 			//PlayerCommands = PI_Jump;
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_DOWN)
 		{
 			PlayerCommands &= ~(1<< PI_MovDown);
-			PlayerCommands = 0;
+			keyRelease =1;
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_C)
 		{
@@ -730,6 +759,10 @@ void UpdateInput()
 		{
 			PlayerCommands &= ~(1<< PI_Powerup5);		
 		}
+		if (event.key.keysym.scancode==SDL_SCANCODE_RETURN)
+		{
+			showPause();
+		}
         break;
 
 		default:
@@ -740,23 +773,6 @@ void UpdateInput()
 }
 	 
 
-//Doesn't work
-/*
-void DefaultConfig()
-{
-	KeyButtons[PI_MovLeft] = SDLK_LEFT;
-	KeyButtons[PI_MovRight] = SDLK_RIGHT;
-	KeyButtons[PI_MovDown] = SDLK_DOWN;
-	KeyButtons[PI_MovUp] = SDLK_UP;
-	KeyButtons[PI_Fire] = SDLK_x; 
-	KeyButtons[PI_Jump] = SDLK_z;
-	KeyButtons[PI_Pause] = SDLK_p;
-	KeyButtons[PI_Powerup1] = SDLK_1;
-	KeyButtons[PI_Powerup2] = SDLK_2;
-	KeyButtons[PI_Powerup3] = SDLK_3;
-	KeyButtons[PI_Powerup4] = SDLK_4;
-}
-*/
 void DummyThink(Entity *self)
 {
 	UpdateDummy(self);
@@ -772,3 +788,43 @@ void UpdateDummy(Entity *self)
 	drawSprite(self->sprite, 0,position);
 	*/
 }
+void Init_HUD (Entity *player)
+{
+	healthBar.x = 10;
+	healthBar.y = 10;
+	healthBar.w = (player->health * 100) / player->maxhealth; 
+	healthBar.h = 20;
+}
+
+void Draw_HUD ()
+{
+	//For the health bar
+	if(ThePlayer ==NULL)
+	{
+		return;
+	}
+	healthBar.w = (ThePlayer->health * 100) / ThePlayer->maxhealth; 
+
+	if (ThePlayer->health < 0)
+	{
+		ThePlayer->health = 0;
+		//setGameState(GSTATE_GAMEOVER, true);
+		//printf("game over");
+	}
+	//For the poweup
+
+	if (ThePlayer->health > 0)
+		{
+			SDL_SetRenderDrawColor(gt_graphics_get_active_renderer(), 0, 0xFF, 0,0xFF );
+			SDL_RenderFillRect ( gt_graphics_get_active_renderer(), &healthBar);
+			SDL_SetRenderDrawColor(gt_graphics_get_active_renderer(), 0, 0, 0,0xFF );
+		}
+
+
+} 
+/*
+SDL_Surface* getScreen ()
+{
+	return screen;
+}
+*/

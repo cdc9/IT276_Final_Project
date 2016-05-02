@@ -19,6 +19,7 @@ int entity_intersect(Entity *a, Entity *b);			//Collision code
 int entity_intersect_rect(Entity *a,SDL_Rect r);
 int max_ents;
 extern int currentLevel;
+extern SDL_Rect _Camera;
 
 void initEntitySystem(int maxEntities)
 {
@@ -294,6 +295,11 @@ void update()
 			{
 				DummyThink(tempEnt);
 			}
+			if(strcmp(tempEnt ->name, "Camera")==0)
+			{
+				EntityList[i].position.x = _Camera.x;
+				EntityList[i].position.y = _Camera.y;
+			}
 			if(strcmp(tempEnt ->name, "Projectile")==0)
 			{
 				UpdateBullet(tempEnt);
@@ -335,6 +341,7 @@ void update()
 				UpdateEnemy(tempEnt,4);
 			}
 		}
+		//Stuff for collision
 		for(j=0; j <  MaxEntities; j++)
 		{
 			if(EntityList[j].inuse && j != i)
@@ -382,6 +389,15 @@ void update()
 							entity_free(&EntityList[j]);
 						}
 					}
+					if(!strcmp(EntityList[i].name, "Dummy"))
+					{
+						if(!strcmp(EntityList[j].name, "Camera"))
+						{
+							slog("The camera has collided with the dummy! Spawn enemy!");
+							SpawnEnemy(EntityList[i].position.x,EntityList[i].position.y, EntityList[i].spawnType);
+							entity_free(&EntityList[i]);
+						}
+					}
 				}
 			}
 		}
@@ -390,4 +406,19 @@ void update()
 	}
 	
 }
+
+Entity* getPlayer()
+{
+	int i;
+
+	for (i = 0; i < MaxEntities; i++)
+	{
+		if (!strcmp(EntityList[i].name, "Player"))
+		{
+			return &EntityList[i];
+		}
+	}
+	return NULL;
+}
+
 /*eol@eof*/

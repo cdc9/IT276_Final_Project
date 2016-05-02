@@ -35,8 +35,11 @@ void gt_graphics_render_surface_to_screen(SDL_Surface *surface,SDL_Rect srcRect,
  */
 SDL_Renderer *gt_graphics_get_active_renderer();
 
+SDL_Surface *__gt_graphics_get_active_surface();
+
 Uint32 gt_graphics_get_system_time();
 void FrameDelay(Uint32 delay);
 void NextFrame();
+
 
 #endif

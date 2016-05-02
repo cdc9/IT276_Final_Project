@@ -3,6 +3,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_mixer.h>
+#include <SDL_ttf.h>
 #include <stdio.h>
 #include "graphics.h"
 #include "simple_logger.h"
@@ -13,6 +14,7 @@
 #include "projectile.h"
 #include "enemy.h"
 #include "platforms.h"
+#include "mainmenu.h"
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/
@@ -20,7 +22,7 @@ extern SDL_Rect _Camera;
 extern SDL_Joystick* gGameController;
 int LEVEL_WIDTH = 3024; //original 1024
 int LEVEL_HEIGHT = 1000; // 768
-int currentLevel = 1;
+extern int currentLevel = 1;
 
 void Init_All();
 void Init_Player();
@@ -72,15 +74,12 @@ int main(int argc, char *argv[])
       printf("temp image loaded successfully\n");
       SDL_BlitSurface(temp,NULL,buffer,NULL);
   }
-  slog("got here");
   gt_graphics_render_surface_to_screen(temp,srcRect,0,0); //Perhaps putting camera here will work?
   SDL_FreeSurface(temp);
-  slog("got here");
   done = 0;
   bg = loadSprite("images/background.png",1032,774,1);
   bg2 = loadSprite("images/background2.png",2000,1500,1);
 
-  
   	   //Load music
     gMusic = Mix_LoadMUS( "sounds/piano.wav" );
     if( gMusic == NULL )
@@ -113,6 +112,7 @@ int main(int argc, char *argv[])
 	}
 	update();
 	entity_draw_all();
+	Draw_HUD();
     NextFrame();
     SDL_PumpEvents();
     keys = SDL_GetKeyboardState(NULL);
@@ -148,17 +148,24 @@ void Init_All()
     0);
 	initEntitySystem(255);
 	initSpriteSystem(255); //TODO
-	//Init_Dummy();
+
+	//For the main menus
+	showTitle();
+	showMain();
+
+	//For loading the levels and players and stuff
 	Init_Player();
+	Init_Dummy();
 	Init_Enemy1();
 	Init_Enemy2();
 	Init_Enemy3();
 	Init_Enemy4();
 	Init_Platform();
+
+	//Setting camera size
 	camSize.x = 800;
 	camSize.y = 600;
 	camera_set_size(camSize);
-	//DefaultConfig();
 	if( SDL_NumJoysticks() < 1 )
         {
             slog( "Warning: No joysticks connected!\n" );
@@ -186,17 +193,27 @@ void Init_Player()
 	{
 		SpawnPlayer(150,200);
 	}
+	SpawnCameraCollider();
 }
 void Init_Dummy()
 {
-	SpawnDummy(200,200);
+	//Level 1 spawns
+	if(currentLevel == 1)
+	{
+		SpawnDummy(600,150, 1);
+		SpawnDummy(700,150, 1);
+		SpawnDummy(1200,260, 1);
+		SpawnDummy(1920,200,2);
+		SpawnDummy(1500,100,3);
+		SpawnEnemy(1950,740,4);
+	}
 }
 void Init_Enemy1()
 {
 	if(currentLevel == 1)
 	{
-		SpawnEnemy(500,150,1);
-		SpawnEnemy(1400,150,1);
+		//SpawnEnemy(500,150,1);
+		//SpawnEnemy(1400,150,1);
 	}
 	if(currentLevel == 2)
 	{
@@ -207,8 +224,8 @@ void Init_Enemy2()
 {
 	if(currentLevel == 1)
 	{
-		SpawnEnemy(1920,200,2);
-		SpawnEnemy(2500,214,2);
+		//SpawnEnemy(1920,200,2);
+		//SpawnEnemy(2500,214,2);
 	}
 	if(currentLevel == 2)
 	{
@@ -223,14 +240,14 @@ void Init_Enemy3()
 {
 	if(currentLevel == 1)
 	{
-		SpawnEnemy(1500,100,3);
+		//SpawnEnemy(1500,100,3);
 	}
 }
 void Init_Enemy4()
 {
 	if(currentLevel == 1)
 	{
-		SpawnEnemy(1950,740,4);
+		//SpawnEnemy(1950,740,4);
 	}
 	if(currentLevel == 2)
 	{

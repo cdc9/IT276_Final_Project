@@ -26,6 +26,7 @@ typedef struct Entity_S
 	int		 state;				/**<Used for switching states*/
 	int		 face;				/**<The direction we are moving in*/
 	int		 facing;			/**<The direction we are facing. Lamer version for prototype*/
+	int		 spawnType;			/**<For the dummy spawn*/
     int      cameraEnt;         /**<true if the entity is drawn relative to the camera*/
 	int		 fcount;			/**<used for animation, the loop variable*/
 	int		 frate;				/**<How often we update our frames*/
@@ -115,4 +116,9 @@ void GetFace(Entity *self);
  */
 void update();
 
+
+/**
+ * @brief This is the get player function. Will return the player entity for use
+ */
+Entity* getPlayer();
 #endif
