@@ -102,6 +102,7 @@ Entity *SpawnPlayer(int x, int y)
 	//UpdatePlayer(newent);
 	ThePlayer = newent;
 	Init_HUD(newent);
+	PlayerCommands = PI_NULL;
 	return newent;
 	//atexit(FinalOutput);
 
@@ -153,6 +154,7 @@ Entity *SpawnCameraCollider()
 		exit(0);
 	}
 	strcpy(newent->name,"Camera");
+	newent->sprite = loadSprite("images/cameraNothing.png",640,400,1);
 	camPos = camera_get_position();
 	camSize = camera_get_size();
 	newent -> position.x = camPos.x;
@@ -171,6 +173,7 @@ void PlayerThink(Entity *self)
 	float t; 
 	char text [40];
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
+
 	
 	if(self->health <=0)
 	{

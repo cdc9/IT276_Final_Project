@@ -87,7 +87,7 @@ void entity_free(Entity *entity)
 	max_ents--;
 
     freeSprite(entity->sprite);
-    entity = NULL;
+
 }
 void entity_free_all()
 {
@@ -95,7 +95,11 @@ void entity_free_all()
     Entity *ent = NULL;
     for (i = 0; i < MaxEntities;i++)
     {
-        ent= &EntityList[i];
+		ent= &EntityList[i];
+		if(ent->inuse == 0)
+		{
+			continue;
+		}
         entity_free(ent);
     }
 

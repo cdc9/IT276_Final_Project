@@ -57,6 +57,12 @@
     <ClCompile Include="..\src\pausemenu.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\levelcomplete.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\initialize.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\sprite.h">
@@ -96,6 +102,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\pausemenu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\levelcomplete.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\initialize.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

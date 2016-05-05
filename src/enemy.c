@@ -10,10 +10,13 @@
 #include "projectile.h"
 #include "simple_logger.h"
 #include "camera.h"
+#include "levelcomplete.h"
+#include "initialize.h"
 
 extern SDL_Surface *screen;
 extern SDL_Rect _Camera;
 extern int deltaTime;
+extern int currentLevel;
 
 Entity *TheEnemy = NULL;
 
@@ -116,7 +119,18 @@ void UpdateEnemy(Entity *self, int type)
 	self -> lastPosition = self-> position;
 	if(self-> health <= 0)
 	{
-		entity_free(self);
+		if(type == 4)
+		{
+			entity_free_all();
+			showLevelComplete();
+			if (currentLevel == 1)
+			{
+				currentLevel = 2;
+				Init_Level();
+			}
+		}
+		else
+			entity_free(self);
 	}
 	switch(type)
 	{

@@ -1,5 +1,5 @@
-#ifndef __MAINMENU_H__
-#define __MAINMENU_H__
+#ifndef __PAUSEMENU_H__
+#define __PAUSEMENU_H__
 
 void showPause();
 

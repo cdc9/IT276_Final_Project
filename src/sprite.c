@@ -151,12 +151,15 @@ void freeSprite(Sprite **sprite) //Original
 */
 void freeSprite(Sprite *sprite)
 {
+	if(sprite->refCount < 1)
+		return;
 	sprite -> refCount--;
     if (sprite->refCount <= 0)
     {
         SDL_DestroyTexture(sprite->image);
         memset(sprite,0,sizeof(Sprite));
     }
-    sprite = NULL;
+
+
 }
 /*eol@eof*/

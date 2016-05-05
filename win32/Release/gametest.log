@@ -1,24 +1,37 @@
-﻿Build started 5/2/2016 2:29:42 PM.
+﻿Build started 5/4/2016 5:02:20 PM.
      1>Project "C:\Worst ninja ever\win32\gametest.vcxproj" on node 2 (build target(s)).
      1>InitializeBuildStatus:
          Creating "Release\gametest.unsuccessfulbuild" because "AlwaysCreate" was specified.
        ClCompile:
-         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /Od /Oi /Oy- /GL /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\src\game.c
-         game.c
-     1>..\src\game.c(104): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(104): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(105): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(105): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(106): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(106): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(110): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(110): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(111): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(111): warning C4244: 'function' : conversion from 'int' to 'float', possible loss of data
-     1>..\src\game.c(65): warning C4101: 'sprite' : unreferenced local variable
-     1>..\src\game.c(59): warning C4101: 'my' : unreferenced local variable
-     1>..\src\game.c(59): warning C4101: 'mx' : unreferenced local variable
-     1>..\src\game.c(64): warning C4101: 'imagepath' : unreferenced local variable
+         c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /Zi /nologo /W3 /WX- /Od /Oi /Oy- /GL /D _MBCS /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Release\\" /Fd"Release\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt ..\src\player.c
+         player.c
+     1>..\src\player.c(86): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(87): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(88): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(89): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(130): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(131): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(203): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(234): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(279): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(293): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(326): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(326): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(330): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(330): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(334): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(334): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(338): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(338): warning C4244: 'function' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(174): warning C4101: 'text' : unreferenced local variable
+     1>..\src\player.c(173): warning C4101: 't' : unreferenced local variable
+     1>..\src\player.c(461): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(462): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(491): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(522): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(523): warning C4244: '=' : conversion from 'int' to 'float', possible loss of data
+     1>..\src\player.c(798): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
+     1>..\src\player.c(809): warning C4244: '=' : conversion from 'float' to 'int', possible loss of data
        Link:
          c:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"../gametest.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib SDL2.lib SDL2main.lib SDL2_image.lib SDL2_mixer.lib SDL2_ttf.lib /MANIFEST /ManifestFile:"Release\gametest.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Worst ninja ever\gametest.pdb" /SUBSYSTEM:CONSOLE /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"../gametest.lib" /MACHINE:X86 Release\camera.obj
          Release\cJSON.obj
@@ -26,6 +39,8 @@
          Release\entity.obj
          Release\game.obj
          Release\graphics.obj
+         Release\initialize.obj
+         Release\levelcomplete.obj
          Release\mainmenu.obj
          Release\pausemenu.obj
          Release\platforms.obj
@@ -35,7 +50,7 @@
          Release\sprite.obj
          Release\vector.obj
          Generating code
-     1>c:\worst ninja ever\src\player.c(166): warning C4715: 'SpawnCameraCollider' : not all control paths return a value
+     1>c:\worst ninja ever\src\player.c(168): warning C4715: 'SpawnCameraCollider' : not all control paths return a value
      1>c:\worst ninja ever\src\projectile.c(342): warning C4716: 'SpawnEnemyBullet' : must return a value
          Finished generating code
          gametest.vcxproj -> C:\Worst ninja ever\win32\../gametest.exe
@@ -48,4 +63,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.12
+Time Elapsed 00:00:01.29
