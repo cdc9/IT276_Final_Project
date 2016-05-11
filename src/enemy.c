@@ -30,6 +30,7 @@ Entity *SpawnEnemy(int x, int y,int type)
 		exit(0);
 	}
 	strcpy(newent->name,"Enemy");
+	newent -> entType = type;
 	switch(type)
 	{
 	case 1:
@@ -48,6 +49,7 @@ Entity *SpawnEnemy(int x, int y,int type)
 		newent -> accel = 0;
 		newent -> state = 0;
 		newent -> timer = 0;
+
 		break;
 	case 2:
 		strcpy(newent->type,"type2");

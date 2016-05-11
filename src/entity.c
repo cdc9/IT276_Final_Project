@@ -364,6 +364,12 @@ void update()
 						if(!strcmp(EntityList[j].name, "Platform2"))
 						{
 							EntityList[i].grounded = 0;
+							EntityList[i].position.y = EntityList[i].lastPosition.y;
+							//slog("it has been set to %d", EntityList[i].grounded);
+						}
+						if(!strcmp(EntityList[j].name, "Platform3"))
+						{
+							EntityList[i].grounded = 0;
 							EntityList[i].position.x = EntityList[i].lastPosition.x;
 							//slog("it has been set to %d", EntityList[i].grounded);
 						}
@@ -382,7 +388,7 @@ void update()
 					{
 						if(!strcmp(EntityList[i].type, "type1") ||!strcmp(EntityList[i].type, "type2") ||!strcmp(EntityList[i].type, "type4"))
 						{
-							if(!strcmp(EntityList[j].name, "Platform")||!strcmp(EntityList[j].name, "Platform2"))
+							if(!strcmp(EntityList[j].name, "Platform")||!strcmp(EntityList[j].name, "Platform2")||!strcmp(EntityList[j].name, "Platform3"))
 							{
 								EntityList[i].position.y = EntityList[i].lastPosition.y;
 							}
@@ -425,4 +431,53 @@ Entity* getPlayer()
 	return NULL;
 }
 
+int entity_get_number_of_type(int currentType)
+{
+	int i;
+	int amount = 0;
+
+	for (i = 0; i < MaxEntities; i++)
+	{
+		if(!EntityList[i].inuse)
+		{
+			continue;
+		}
+		if(EntityList[i].entType != currentType)
+		{
+			continue;
+		}
+		amount++;
+	}
+	return amount++;
+}
+
+Vec2d entity_get_position_of_type(int type)
+{
+	static int i = 0;
+	static int currentType = 0;
+	Vec2d pos = vec2d(0, 0);
+
+	if(type != currentType)
+	{
+		i = 0;
+		currentType = type;
+	}
+	while(i < MaxEntities)
+	{
+		if(!EntityList[i].inuse)
+		{
+			i++;
+			continue;
+		}
+		if(EntityList[i].entType != currentType)
+		{
+			i++;
+			continue;
+		}
+		pos = EntityList[i].position;
+		i++;
+		break;
+	}
+	return pos;
+}
 /*eol@eof*/

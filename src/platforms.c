@@ -28,6 +28,7 @@ Entity *SpawnPlatform(int x, int y)
 		exit(0);
 	}
 	strcpy(newent->name,"Platform");
+	newent -> entType = 5;
 	newent->sprite = loadSprite("images/levelPlatform1.png",513,23,1);
 	newent -> bounds.x = 0;
 	newent -> bounds.y = 0;
@@ -53,7 +54,8 @@ Entity *SpawnPlatform2(int x, int y)
 		fprintf(stderr, "Unable to generate player entity; %s", SDL_GetError());
 		exit(0);
 	}
-	strcpy(newent->name,"Platform");
+	strcpy(newent->name,"Platform2");
+	newent -> entType = 6;
 	newent->sprite = loadSprite("images/levelPlatform2.png",160,16,1);
 	newent -> bounds.x = 0;
 	newent -> bounds.y = 0;
@@ -79,7 +81,8 @@ Entity *SpawnPlatform3(int x, int y)
 		fprintf(stderr, "Unable to generate player entity; %s", SDL_GetError());
 		exit(0);
 	}
-	strcpy(newent->name,"Platform2");
+	strcpy(newent->name,"Platform3");
+	newent -> entType = 7;
 	newent->sprite = loadSprite("images/levelPlatform3.png",16,508,1);
 	newent -> bounds.x = 0;
 	newent -> bounds.y = 0;

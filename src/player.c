@@ -11,6 +11,10 @@
 #include "simple_logger.h"
 #include "camera.h"
 #include "pausemenu.h"
+#include "levelcomplete.h"
+#include "initialize.h"
+#include "loadlevel.h"
+#include "mainmenu.h"
 
 extern SDL_Surface *screen;
 extern Entity *ThePlayer;
@@ -18,6 +22,8 @@ extern SDL_Rect _Camera;
 extern int LEVEL_WIDTH;
 extern int LEVEL_HEIGHT;
 extern int deltaTime;
+extern int currentLevel;
+int rand(void);
 
 enum PlayerInputs {PI_NULL,PI_MovLeft,PI_MovRight,PI_MovDown,PI_MovUp,PI_Fire,PI_Jump,PI_MovUpLeft,PI_MovDownLeft,PI_MovUpRight,PI_MovDownRight,
                    PI_Pause,PI_Powerup1,PI_Powerup2,PI_Powerup3,PI_Powerup4,PI_Powerup5,PI_Max};
@@ -47,12 +53,17 @@ Player ThisPlayer;
 extern Mix_Music *gMusic;
 
 //The sound effects that will be used
-extern Mix_Chunk *gScratch;
-
+extern Mix_Chunk *gJump;
+extern Mix_Chunk *gJump2;
+extern Mix_Chunk *gJump3;
+extern Mix_Chunk *gDeath;
+extern Mix_Chunk *gGameOver;
 //HUD stuff
 SDL_Rect healthBar;
 SDL_Rect powerUpBox;
 
+int deathTimer;
+int playerLives = 3;
 /**
  * @brief Spawn the player in the level. Defines the player's attributes 
  * @param an x and y for the player's position.
@@ -97,7 +108,9 @@ Entity *SpawnPlayer(int x, int y)
 	newent -> maxJumpSpeed = 5;
 	newent -> timer = 0;
 	newent -> powerup = 0;
+	newent-> hasLives = 3;
 	newent ->facing = 3;
+	deathTimer = 3000;
 	//drawSprite(newent ->sprite, 5,vec2d(x,y));
 	//UpdatePlayer(newent);
 	ThePlayer = newent;
@@ -170,15 +183,48 @@ Entity *SpawnCameraCollider()
 void PlayerThink(Entity *self)
 {
 	int moving = 0;
+	int done = 0;
 	float t; 
 	char text [40];
 	const Uint8 *keys = SDL_GetKeyboardState(NULL);
 
 	
-	if(self->health <=0)
+	if(self->health <=0 && playerLives > 0)
 	{
-		entity_free(self);
+	Mix_PlayChannel( -1, gDeath, 0 );
+	entity_free_all();
+	do
+	{
+	deathTimer = deathTimer - deltaTime;
+		if(deathTimer < 0)
+		{
+			done = 1;
+			showDeathScreen(playerLives);
+			Init_Level();
+			if(currentLevel == 3)
+			{
+				level_load(EDITOR_LEVEL);
+				Init_Level();
+			}
+			playerLives -= 1;
+		}
 	}
+	while(!done);
+	return;
+	}
+	if(self->health <=0 && playerLives <= 0)
+	{
+		Mix_PlayChannel( -1, gGameOver, 0 );
+		entity_free_all();
+		showDeathScreen(playerLives);
+		playerLives = 3;
+		currentLevel = 1;
+		showMain();
+		Init_Level();
+		return;
+	}
+	
+	
 	self-> lastPosition = self->position;
 	UpdateInput();
 	GetFace(self);
@@ -526,7 +572,9 @@ void UpdateCameraCollider(Entity *self)
 void UpdateInput()
 {
 	static int pressed = 0;
+	int jumpSound = 0;
 	SDL_Event event;
+	
 	while(SDL_PollEvent( &event))
 	{
 		switch(event.type)
@@ -649,8 +697,7 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_X)
 		{
 
-			PlayerCommands |= (1<< PI_Jump);
-			Mix_PlayChannel( -1, gScratch, 0 );
+			PlayerCommands |= (1<< PI_Jump); 
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_C)
 		{
@@ -708,6 +755,19 @@ void UpdateInput()
 		if (event.key.keysym.scancode==SDL_SCANCODE_X)
 		{
 			PlayerCommands &= ~(1<< PI_Jump);
+			jumpSound = rand() % 3;
+			if(jumpSound == 0)
+			{
+			Mix_PlayChannel( -1, gJump, 0 );
+			}
+			if(jumpSound == 1)
+			{
+			Mix_PlayChannel( -1, gJump2, 0 );
+			}
+			if(jumpSound == 2)
+			{
+			Mix_PlayChannel( -1, gJump3, 0 );
+			}
 		}
 		if (event.key.keysym.scancode==SDL_SCANCODE_LEFT)
 		{
@@ -825,6 +885,8 @@ void Draw_HUD ()
 
 
 } 
+
+
 /*
 SDL_Surface* getScreen ()
 {

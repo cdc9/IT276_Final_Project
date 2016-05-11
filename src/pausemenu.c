@@ -9,6 +9,7 @@
 #include "simple_logger.h"
 #include "mainmenu.h"
 #include "player.h"
+#include "initialize.h"
 
 TTF_Font *newFont = NULL;
 
@@ -48,7 +49,7 @@ void showPause()
 	done = 0;
 
 	strcpy(resumeText,"Resume Game");
-	strcpy(quitGameText,"Quit Game");
+	strcpy(quitGameText,"Quit to Main Menu");
 
 	message = TTF_RenderText_Solid( newFont, resumeText, newTextColor2);
 	message2 = TTF_RenderText_Solid( newFont, quitGameText, newTextColor);
@@ -143,7 +144,9 @@ void showPause()
 						break;
 					case 1:
 						done = 1;
-						exit(1);
+						entity_free_all();
+						showMain();
+						Init_Level();
 						break;
 					}
 					break;

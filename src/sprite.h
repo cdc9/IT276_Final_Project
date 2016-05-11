@@ -48,5 +48,5 @@ void drawSprite(Sprite *sprite,int frame,Vec2d position);
  */
 void freeSprite(Sprite *sprite);
 
-void drawBackground(Sprite *sprite);
+
 #endif

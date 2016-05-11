@@ -17,6 +17,7 @@ typedef struct Entity_S
     int      inuse;             /**<flag for tracking resource use*/
     char     name[128];			/**< Used for the names of the entities */
 	char	 type[128];			/**< Used to describe the type of entity*/
+	int		 entType;			/**< Used for level editor check*/
     Vec2d    position;			/**< Used for the position of the entity */
 	Vec2d    lastPosition;		/**< Used for the previous position of the entity */
 	Vec2d    offset;			/**< Used for the offset of the entity */
@@ -41,9 +42,11 @@ typedef struct Entity_S
 	int		 timer;				/**< timer for various entities*/
 	int		 bulletTimer;		/**< bullet timer for various entities*/
 	int		 bulletTimer2;		/**< bullet timer for boss entities*/
+	int		 deathTimer;		/**< timer for when the player dies*/
 	int		 switcher;			/**< int to show when boos will be shoot high or low*/
 	int		 damage;			/**< Damage of the entity*/
 	int		 powerup;			/**< Current powerup the player has*/
+	int		 hasLives;			/**< How many lives the player has*/
     void     (*draw)(struct Entity_S *self,SDL_Renderer *renderer); /**< Defining the draw entity */
     int      nextThink;			/**< time index for next think*/
     int      thinkRate;			/**< how often to run think*/
@@ -121,4 +124,13 @@ void update();
  * @brief This is the get player function. Will return the player entity for use
  */
 Entity* getPlayer();
+
+/**
+ * @brief This is the get amount of certain type of entity.
+ */
+int entity_get_number_of_type(int currentType);
+/**
+ * @brief This will get the position of the entity
+ */
+Vec2d entity_get_position_of_type(int currentType);
 #endif

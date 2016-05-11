@@ -82,7 +82,13 @@ void Init_HUD(Entity *player);
  */
 void Draw_HUD();
 
+/**
+ * @brief gets the player for uses in other functions
+ * @return player entity.
+ */
 Entity *getPlayer();
+
+
 
 //SDL_Surface* getScreen ();
 

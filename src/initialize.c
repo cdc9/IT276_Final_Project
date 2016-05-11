@@ -5,6 +5,7 @@
 #include <SDL_mixer.h>
 #include <SDL_ttf.h>
 #include <stdio.h>
+#include <time.h>
 #include "graphics.h"
 #include "simple_logger.h"
 #include "sprite.h"
@@ -17,6 +18,7 @@
 #include "mainmenu.h"
 #include "levelcomplete.h"
 #include "initialize.h"
+
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/

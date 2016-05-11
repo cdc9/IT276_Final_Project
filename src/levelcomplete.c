@@ -8,8 +8,10 @@
 #include "sprite.h"
 #include "simple_logger.h"
 #include "levelcomplete.h"
+#include "initialize.h"
 
 extern int currentLevel;
+extern int deltaTime;
 
 TTF_Font *levelFont = NULL;
 
@@ -113,4 +115,89 @@ void showLevelComplete()
 	}
 	while(!done);
 	return;
+}
+
+void showDeathScreen(int playerLives)
+{
+	int timer = 3000;
+	SDL_Renderer* renderer = gt_graphics_get_active_renderer();
+	SDL_Texture* Title;
+	SDL_Rect Logo;
+	SDL_Rect levelCompleteWindow;
+	char title[32];
+	const Uint8 *keys;// the player
+	int done;
+	SDL_Surface* message; 
+	//Background
+	SDL_Surface *bg;
+	//Events
+	SDL_Event e; 
+
+	levelFont =TTF_OpenFont("fonts/prstartk.ttf", 36);
+
+	if( levelFont == NULL)
+	{
+		slog("font is not working");
+		return;
+	}
+
+	done = 0;
+	if(playerLives > 0)
+	{
+	strcpy(title,"TRY AGAIN");
+	}
+	if(playerLives <= 0)
+	{
+	strcpy(title,"GAME OVER");
+	}
+	message = TTF_RenderText_Solid( levelFont, title, levelTextColor);
+	Title = SDL_CreateTextureFromSurface(renderer, message);
+
+	Logo.x = 250;
+	Logo.y = 300;
+	Logo.w = 300;
+	Logo.h = 25;
+
+	levelCompleteWindow.x = 0;
+	levelCompleteWindow.y = 0;
+	levelCompleteWindow.w = 800;
+	levelCompleteWindow.h = 600;
+
+
+	SDL_SetRenderDrawColor(gt_graphics_get_active_renderer(), 0, 0, 0, 0);
+	SDL_RenderFillRect ( gt_graphics_get_active_renderer(), &levelCompleteWindow);
+	SDL_SetRenderDrawColor(gt_graphics_get_active_renderer(), 0, 0, 0,0xFF );
+
+	SDL_RenderCopy(renderer, Title,NULL, &Logo);
+	SDL_RenderPresent(renderer);
+
+	do 
+	{
+		
+		SDL_PollEvent (&e);
+		if(&e)
+		{
+			if( e.type == SDL_KEYUP)
+			{
+				//Select Surface based on key presses
+				switch(e.key.keysym.sym)
+				{
+				case SDLK_RETURN:
+					done = 1; 
+					e.type = SDLK_CLEAR;
+					break;
+				}
+			}
+		}
+	keys = SDL_GetKeyboardState(NULL);
+	if(keys[SDL_SCANCODE_ESCAPE])
+		{
+			exit(1);
+		}
+
+	}
+	
+	while(!done);
+	return;
+
 }

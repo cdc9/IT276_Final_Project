@@ -63,6 +63,12 @@
     <ClCompile Include="..\src\initialize.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\leveleditor.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\loadlevel.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\sprite.h">
@@ -108,6 +114,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\initialize.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\leveleditor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\loadlevel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

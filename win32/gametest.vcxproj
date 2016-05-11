@@ -19,6 +19,8 @@
     <ClCompile Include="..\src\graphics.c" />
     <ClCompile Include="..\src\initialize.c" />
     <ClCompile Include="..\src\levelcomplete.c" />
+    <ClCompile Include="..\src\leveleditor.c" />
+    <ClCompile Include="..\src\loadlevel.c" />
     <ClCompile Include="..\src\mainmenu.c" />
     <ClCompile Include="..\src\pausemenu.c" />
     <ClCompile Include="..\src\platforms.c" />
@@ -36,6 +38,8 @@
     <ClInclude Include="..\src\graphics.h" />
     <ClInclude Include="..\src\initialize.h" />
     <ClInclude Include="..\src\levelcomplete.h" />
+    <ClInclude Include="..\src\leveleditor.h" />
+    <ClInclude Include="..\src\loadlevel.h" />
     <ClInclude Include="..\src\mainmenu.h" />
     <ClInclude Include="..\src\pausemenu.h" />
     <ClInclude Include="..\src\platforms.h" />

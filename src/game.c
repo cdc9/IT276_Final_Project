@@ -17,13 +17,14 @@
 #include "mainmenu.h"
 #include "levelcomplete.h"
 #include "initialize.h"
+#include <time.h>
 
 extern SDL_Surface *screen;
 extern SDL_Surface *buffer; /*pointer to the draw buffer*/
 extern SDL_Rect _Camera;
 extern SDL_Joystick* gGameController;
-int LEVEL_WIDTH = 3024; //original 1024
-int LEVEL_HEIGHT = 1000; // 768
+extern int LEVEL_WIDTH = 3024; //original 1024
+extern int LEVEL_HEIGHT = 1000; // 768
 extern int currentLevel = 1;
 
 
@@ -39,19 +40,23 @@ int deltaTime;
 extern Mix_Music *gMusic = NULL;
 
 //The sound effects that will be used
-extern Mix_Chunk *gScratch = NULL;
+extern Mix_Chunk *gJump = NULL;
+extern Mix_Chunk *gJump2 = NULL;
+extern Mix_Chunk *gJump3 = NULL;
+extern Mix_Chunk *gDeath = NULL;
+extern Mix_Chunk *gGameOver = NULL;
 
 /**
  * @brief Main game loop. Initialize everything and have a loop for update functions.
  */
 int main(int argc, char *argv[])
 {
+  time_t t;	
   SDL_Surface *temp = NULL;
   int lastTime = 0;
   //New variables
   int done;
   int mx,my;
-
   int doOnce = 0;
   int tx = 0,ty = 0;
   const Uint8 *keys;
@@ -61,6 +66,7 @@ int main(int argc, char *argv[])
   Sprite *bg2;
   SDL_Rect srcRect={0,0,800,600};
   //Init_All();
+  srand((unsigned) time(&t));
   Init_Begin();
   Init_Level();
   lastTime= SDL_GetTicks();
@@ -83,8 +89,28 @@ int main(int argc, char *argv[])
         printf( "Failed to load beat music! SDL_mixer Error: %s\n", Mix_GetError() );
     }
 	  //Load sound effects
-    gScratch = Mix_LoadWAV( "sounds/jump2.wav" );
-    if( gScratch == NULL )
+    gJump = Mix_LoadWAV( "sounds/jump2.wav" );
+    if( gJump == NULL )
+    {
+        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+	 gJump2 = Mix_LoadWAV( "sounds/jump3.wav" );
+    if( gJump2 == NULL )
+    {
+        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+	gJump3 = Mix_LoadWAV( "sounds/jump5.wav" );
+    if( gJump3 == NULL )
+    {
+        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+	gDeath = Mix_LoadWAV( "sounds/lifeLost.wav" );
+    if( gDeath == NULL )
+    {
+        printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+	gGameOver = Mix_LoadWAV( "sounds/gameover.wav" );
+    if( gGameOver == NULL )
     {
         printf( "Failed to load scratch sound effect! SDL_mixer Error: %s\n", Mix_GetError() );
     }
@@ -105,6 +131,12 @@ int main(int argc, char *argv[])
 	{
 		drawSprite(bg2,0,vec2d(0-_Camera.x,0-_Camera.y));
 		drawSprite(bg,0,vec2d(2000-_Camera.x,0-_Camera.y));
+	}
+	if(currentLevel == 3)
+	{
+		drawSprite(bg,0,vec2d(0-_Camera.x,0-_Camera.y));
+		drawSprite(bg,0,vec2d(1032-_Camera.x,0-_Camera.y));
+		drawSprite(bg,0,vec2d(2064-_Camera.x,0-_Camera.y));
 	}
 	update();
 	entity_draw_all();

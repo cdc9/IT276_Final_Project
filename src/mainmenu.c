@@ -8,6 +8,9 @@
 #include "sprite.h"
 #include "simple_logger.h"
 #include "mainmenu.h"
+#include "leveleditor.h"
+#include "loadlevel.h"
+#include "initialize.h"
 
 int GP;
 extern int currentLevel;
@@ -290,6 +293,7 @@ void showMain()
 					{
 					case 0:
 						GP = 1;
+						currentLevel = 1;
 						done = 1;
 						break;
 					case 1:
@@ -299,6 +303,7 @@ void showMain()
 						break;
 					case 2:
 						GP = 0;
+						showEditor();
 						done = 1;
 						break;
 					case 3:
@@ -354,7 +359,7 @@ void levelSelect()
 
 	strcpy(option1 ,"LEVEL 1");
 	strcpy(option2 ,"LEVEL 2");
-	strcpy(option3 ,"LEVEL 3");
+	strcpy(option3 ,"EDITOR LEVEL");
 	strcpy(option4 ,"Back to Main");
 
 	 if( font == NULL )
@@ -477,7 +482,10 @@ void levelSelect()
 						done = 1;
 						break;
 					case 2:
+						currentLevel = 3;
 						done = 1;
+						level_load(EDITOR_LEVEL);
+						Init_Level();
 						break;
 					case 3:
 						done = 1;
